@@ -701,13 +701,15 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     var from=document.getElementById('ayah-from').value.trim();
     var to=document.getElementById('ayah-to').value.trim();
     var level=document.getElementById('level').value;
-    var groupNotes=document.getElementById('group-notes').value.trim();
-    var reflection=document.getElementById('reflection').value.trim();
+    var groupNotes=document.getElementById('group-notes').innerHTML.trim();
+    var reflection=document.getElementById('reflection').innerHTML.trim();
     var action=document.getElementById('action').value.trim();
     var saveMsg=document.getElementById('save-msg');
     var saveBtn=document.getElementById('save-btn');
     if (!sn&&!name){alert('Please enter a surah number.');return;}
-    if (!groupNotes&&!reflection&&!action){alert('Please add at least one note before saving.');return;}
+    var _gn=groupNotes.replace(/<[^>]+>/g,'').trim();
+    var _rf=reflection.replace(/<[^>]+>/g,'').trim();
+    if (!_gn&&!_rf&&!action){alert('Please add at least one note before saving.');return;}
     var ayahLabel=from?(to&&to!==from?from+'-'+to:from):'surah level';
     var noteId=Date.now();
     saveBtn.disabled=true;
@@ -726,7 +728,12 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       ayah:String(ayahLabel), level:level,
       arabic:fetchedArabic||null, translation:fetchedTrans||null,
       group_notes:groupNotes||null,
-      reflection:reflection||null, action:action||null,
+      group_notes_ar:document.getElementById('group-notes-ar').innerHTML.trim()||null,
+      reflection:reflection||null,
+      reflection_ar:document.getElementById('reflection-ar').innerHTML.trim()||null,
+      action:action||null,
+      word_by_word:fetchedWords.length?JSON.stringify(fetchedWords):null,
+      youtube_link:document.getElementById('youtube-link').value.trim()||null,
       attachments:attachments, user_id:currentUser.id
     };
     var result=await sb.from('notes').insert(row);
