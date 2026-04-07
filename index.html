@@ -710,7 +710,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     var saveMsg=document.getElementById('save-msg');
     var saveBtn=document.getElementById('save-btn');
     if (!sn&&!name){alert('Please enter a surah number.');return;}
-    if (!groupNotes&&!reflection&&!tafseer&&!action){alert('Please add at least one note before saving.');return;}
+    if (!groupNotes&&!reflection&&!action){alert('Please add at least one note before saving.');return;}
     var ayahLabel=from?(to&&to!==from?from+'-'+to:from):'surah level';
     var noteId=Date.now();
     saveBtn.disabled=true;
@@ -728,7 +728,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       surah_num:sn, surah_name:name||SURAHS[parseInt(sn)]||'',
       ayah:String(ayahLabel), level:level,
       arabic:fetchedArabic||null, translation:fetchedTrans||null,
-      group_notes:groupNotes||null, tafseer:tafseer||null,
+      group_notes:groupNotes||null,
       reflection:reflection||null, action:action||null,
       attachments:attachments, user_id:currentUser.id
     };
@@ -871,7 +871,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     var filtered=notes.filter(function(n){
       if(sf&&(n.surahNum+'|'+n.surahName)!==sf)return false;
       if(lf&&n.level!==lf)return false;
-      if(searchVal){var blob=[n.surahNum,n.surahName,n.ayah,n.arabic,n.translation,n.groupNotes,n.tafseer,n.reflection,n.action,n.youtubeLink].join(' ').toLowerCase();if(blob.indexOf(searchVal)===-1)return false;}
+      if(searchVal){var blob=[n.surahNum,n.surahName,n.ayah,n.arabic,n.translation,n.groupNotes,n.reflection,n.action,n.youtubeLink].join(' ').toLowerCase();if(blob.indexOf(searchVal)===-1)return false;}
       return true;
     });
     // Handle special chip filters
@@ -954,7 +954,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
       h+='<div class="note-fields">';
       if(n.groupNotes)h+='<div class="nf-full"><div class="nf-label">Study group notes</div><div class="nf-val">'+highlight(linkifyRefs(n.groupNotes),searchVal)+'</div></div>';
-      if(n.tafseer)h+='<div><div class="nf-label">Tafseer</div><div class="nf-val">'+highlight(linkifyRefs(n.tafseer),searchVal)+'</div></div>';
       if(n.reflection)h+='<div><div class="nf-label">Reflection</div><div class="nf-val">'+highlight(linkifyRefs(n.reflection),searchVal)+'</div></div>';
       if(n.action)h+='<div class="nf-full"><div class="nf-label">Action point</div><div class="nf-val"><span class="action-pill">&#10003; '+n.action+'</span></div></div>';
       h+='</div>';
@@ -1063,7 +1062,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     if (!note) return;
     editingId = id;
     document.getElementById('edit-group-notes').innerHTML = note.groupNotes || '';
-    document.getElementById('edit-tafseer').value = note.tafseer || '';
     document.getElementById('edit-reflection').innerHTML = note.reflection || '';
     document.getElementById('edit-action').value = note.action || '';
     document.getElementById('edit-youtube-link').value = note.youtubeLink || '';
