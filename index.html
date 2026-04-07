@@ -812,7 +812,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       h+='<div class="note-card-top"><div>';
       h+='<div class="note-surah">'+(n.surahNum?n.surahNum+'. ':'')+n.surahName+'</div>';
       if(n.ayah)h+='<div class="note-ayah">Aayah '+n.ayah+'</div>';
-      h+='</div><button class="del-btn" onclick="deleteNote('+n.id+')" title="Delete">&#10005;</button></div>';
+      h+='</div>';
+      h+='<div style="display:flex;gap:6px;flex-shrink:0">';
+      h+='<button onclick="editNote('+n.id+')" style="background:none;border:1px solid var(--border);border-radius:var(--radius);padding:4px 10px;font-size:12px;cursor:pointer;color:var(--ink-mid);font-family:DM Sans,sans-serif">Edit</button>';
+      h+='<button class="del-btn" onclick="deleteNote('+n.id+')" title="Delete">&#10005;</button>';
+      h+='</div></div>';
       h+='<div class="note-meta"><span class="chip teal">'+n.level+'</span><span class="chip">'+n.date+'</span>';
       if(n.attachments&&n.attachments.length)h+='<span class="chip">&#128206; '+n.attachments.length+' file'+(n.attachments.length>1?'s':'')+'</span>';
       h+='</div>';
