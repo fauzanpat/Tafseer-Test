@@ -2134,21 +2134,24 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   window.showMorphPanel = function(btn, wordAr, surah, ayah, wordPos) {
     // Close any open panel first
     closeMorphPanel();
-    
+
     var panelId = 'morp-' + surah + '-' + ayah + '-' + wordPos;
     var panel = document.getElementById(panelId);
     if (!panel) return;
-    
-    loadMorphData(function() {
-      panel.innerHTML = buildMorphHtml(wordAr, surah, ayah, wordPos);
-      panel.classList.add('visible');
-      activeMorphPanel = panel;
-    });
-    
-    // Show loading state immediately
+
+    // Show loading state first, then fill
     panel.innerHTML = '<div style="font-size:12px;color:var(--ink-muted);padding:4px;text-align:center">جاري التحميل...</div>';
     panel.classList.add('visible');
     activeMorphPanel = panel;
+
+    loadMorphData(function() {
+      // Re-fetch panel by ID in case DOM changed
+      var p = document.getElementById(panelId);
+      if (!p) return;
+      p.innerHTML = buildMorphHtml(wordAr, surah, ayah, wordPos);
+      p.classList.add('visible');
+      activeMorphPanel = p;
+    });
   };
 
   // Close morph panel on outside click
