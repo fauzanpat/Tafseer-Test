@@ -1917,6 +1917,16 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
           wordRootMap[occ] = entry.root;
         });
       });
+      // Debug: log the first few occurrence keys and first 3 roots to console
+      var firstEntry = data[0];
+      var secondEntry = data[1];
+      console.log('[Roots] First root:', firstEntry && firstEntry.root, 'first 3 occurrences:', firstEntry && firstEntry.occurrences && firstEntry.occurrences.slice(0,3));
+      console.log('[Roots] Second root:', secondEntry && secondEntry.root, 'first 3 occurrences:', secondEntry && secondEntry.occurrences && secondEntry.occurrences.slice(0,3));
+      console.log('[Roots] Total entries in wordRootMap:', Object.keys(wordRootMap).length);
+      console.log('[Roots] Sample - key "0:1":', wordRootMap['0:1']);
+      console.log('[Roots] Sample - key "0:2":', wordRootMap['0:2']);
+      console.log('[Roots] Sample - key "261:1":', wordRootMap['261:1']);
+      console.log('[Roots] keyToRank["1:1"]:', keyToRank['1:1'], 'keyToRank["2:255"]:', keyToRank['2:255']);
       rootsLoading = false;
       rootsLoadCallbacks.forEach(function(cb) { cb(); });
       rootsLoadCallbacks = [];
