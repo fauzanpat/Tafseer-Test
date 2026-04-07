@@ -1906,8 +1906,27 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     if (rootsLoading) { rootsLoadCallbacks.push(callback); return; }
     rootsLoading = true;
     rootsLoadCallbacks.push(callback);
-    var url = 'https://cdn.jsdelivr.net/gh/AbstractThinker0/quran-roots@main/quranRoots.json';
-    fetch(url).then(function(r) { return r.json(); }).then(function(data) {
+    // Try multiple URLs in order - raw GitHub works in browsers even when CDN has issues
+    var urls = [
+      'https://cdn.jsdelivr.net/gh/AbstractThinker0/quran-roots/quranRoots.json',
+      'https://raw.githubusercontent.com/AbstractThinker0/quran-roots/main/quranRoots.json',
+      'https://cdn.jsdelivr.net/gh/AbstractThinker0/quran-roots@main/quranRoots.json'
+    ];
+    var url = urls[0];
+    function tryFetch(urlIndex) {
+      if (urlIndex >= urls.length) {
+        console.warn('[Roots] All URLs failed');
+        rootsData = {};
+        rootsLoading = false;
+        rootsLoadCallbacks.forEach(function(cb) { cb(); });
+        rootsLoadCallbacks = [];
+        return;
+      }
+      console.log('[Roots] Trying URL:', urls[urlIndex]);
+      fetch(urls[urlIndex]).then(function(r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      }).then(function(data) {
       rootsData = data;
       // Build wordRootMap from the roots array
       // Format: [{id, root, occurrences:["verse_rank:word_pos",...]}, ...]
@@ -1930,13 +1949,12 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       rootsLoading = false;
       rootsLoadCallbacks.forEach(function(cb) { cb(); });
       rootsLoadCallbacks = [];
-    }).catch(function(e) {
-      console.warn('Could not load roots data:', e.message);
-      rootsData = {};
-      rootsLoading = false;
-      rootsLoadCallbacks.forEach(function(cb) { cb(); });
-      rootsLoadCallbacks = [];
-    });
+      }).catch(function(e) {
+        console.warn('[Roots] URL failed:', urls[urlIndex], e.message);
+        tryFetch(urlIndex + 1);
+      });
+    }
+    tryFetch(0);
   }
 
   function getRootForWord(surahNum, ayahNum, wordPos) {
