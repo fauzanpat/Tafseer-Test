@@ -62,6 +62,18 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .trans-text{font-family:"Lora",serif;font-size:.9rem;line-height:1.75;color:var(--ink-mid);font-style:italic}
 .status-msg{font-size:13px;padding:6px 0;min-height:24px;color:var(--ink-muted)}
 .status-msg.err{color:var(--danger)}.status-msg.loading{color:var(--teal-mid)}.status-msg.ok{color:var(--teal);font-weight:500}
+/* vocab tab */
+#vocab-table tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
+#vocab-table tbody tr:last-child{border-bottom:none}
+#vocab-table tbody tr:hover{background:var(--surface-2)}
+.vocab-ar{font-family:"Amiri",serif;font-size:1.2rem;direction:rtl;text-align:right;color:var(--ink);padding:10px 14px;vertical-align:top}
+.vocab-ex{font-family:"Amiri",serif;font-size:.95rem;direction:rtl;text-align:right;color:var(--ink-mid);padding:10px 14px;line-height:1.7;vertical-align:top}
+.vocab-en{font-size:13px;color:var(--ink-mid);padding:10px 14px;vertical-align:top;text-align:left}
+.vocab-del{padding:8px;vertical-align:middle;text-align:center}
+.vocab-del button{background:none;border:none;cursor:pointer;color:var(--ink-faint);font-size:16px;padding:2px 4px;border-radius:4px}
+.vocab-del button:hover{color:var(--danger);background:var(--surface-2)}
+.vocab-highlight{background:var(--teal-light);border-radius:2px}
+.vocab-edit-cell{outline:none;width:100%;background:transparent;border:none;font-family:inherit;font-size:inherit;color:inherit;direction:inherit;text-align:inherit;padding:0;resize:none;line-height:inherit}
 /* video study tab */
 .ts-item{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);transition:background .2s}
 .ts-item:hover{background:var(--teal-pale);border-color:var(--teal-light)}
@@ -254,6 +266,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <button class="tab" id="tab-btn-browse">My notes</button>
       <button class="tab" id="tab-btn-overview">Overview</button>
       <button class="tab" id="tab-btn-video">&#9654; Video</button>
+      <button class="tab" id="tab-btn-vocab">&#128218; Vocab</button>
     </div>
   </header>
   <main>
@@ -394,7 +407,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
           <button onclick="closeVideo()" style="background:none;border:1px solid var(--border);border-radius:var(--radius);padding:4px 10px;font-size:12px;cursor:pointer;color:var(--ink-muted);flex-shrink:0">&#10005; Close</button>
         </div>
         <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:var(--radius-lg);margin-bottom:1rem">
-          <iframe id="yt-iframe" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:var(--radius-lg)" allowfullscreen allow="autoplay"></iframe>
+          <iframe id="yt-iframe" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:var(--radius-lg)" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
         </div>
         <div style="background:white;border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem">
           <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-muted);margin-bottom:.75rem">Timestamp notes</div>
@@ -515,16 +528,18 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
   // ── TABS ──
   function showTab(id) {
-    ['add','browse','overview','video'].forEach(function(t) {
+    ['add','browse','overview','video','vocab'].forEach(function(t) {
       document.getElementById('tab-btn-' + t).classList.toggle('active', t === id);
       document.getElementById('tab-' + t).classList.toggle('active', t === id);
     });
     if(id==='video') initVideoTab();
+    if(id==='vocab') initVocabTab();
   }
   document.getElementById('tab-btn-add').addEventListener('click', function() { showTab('add'); });
   document.getElementById('tab-btn-browse').addEventListener('click', function() { showTab('browse'); });
   document.getElementById('tab-btn-overview').addEventListener('click', function() { showTab('overview'); });
   document.getElementById('tab-btn-video').addEventListener('click', function() { showTab('video'); });
+  document.getElementById('tab-btn-vocab').addEventListener('click', function() { showTab('vocab'); });
 
   // ── AUTH ──
   document.getElementById('google-signin-btn').addEventListener('click', function() {
@@ -1770,6 +1785,10 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
   function initVideoTab() {
     renderRecentLinks();
+    // Re-render if notes loaded after tab was first shown
+    if (!notes.length) {
+      setTimeout(function() { renderRecentLinks(); }, 1500);
+    }
   }
 
   function renderRecentLinks() {
@@ -1806,7 +1825,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     tsComments = [];
     renderTsComments();
     var iframe = document.getElementById('yt-iframe');
-    iframe.src = 'https://www.youtube.com/embed/'+id+'?enablejsapi=1&rel=0&modestbranding=1';
+    var origin = encodeURIComponent(window.location.origin);
+    iframe.src = 'https://www.youtube.com/embed/'+id+'?enablejsapi=1&rel=0&modestbranding=1&origin='+origin;
     document.getElementById('video-title').textContent = url.length > 60 ? url.substring(0,60)+'...' : url;
     document.getElementById('video-setup').style.marginBottom = '.75rem';
     document.getElementById('video-player-wrap').style.display = 'block';
@@ -1865,7 +1885,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       else {
         // Fallback: update iframe src with start time
         var iframe = document.getElementById('yt-iframe');
-        var base = 'https://www.youtube.com/embed/'+currentVideoId+'?enablejsapi=1&rel=0&modestbranding=1&start='+Math.floor(secs)+'&autoplay=1';
+        var seekOrigin = encodeURIComponent(window.location.origin);
+        var base = 'https://www.youtube.com/embed/'+currentVideoId+'?enablejsapi=1&rel=0&modestbranding=1&origin='+seekOrigin+'&start='+Math.floor(secs)+'&autoplay=1';
         iframe.src = base;
       }
     } catch(e) {}
@@ -2210,6 +2231,136 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       closeMorphPanel();
     }
   });
+
+
+  // ── VOCABULARY TAB ──
+  var vocabWords = [];   // [{id, arabic, example, meaning}]
+  var vocabLoaded = false;
+
+  function initVocabTab() {
+    if (vocabLoaded) { renderVocab(); return; }
+    // Load from Supabase (vocab table) if it exists, else use localStorage as fallback
+    loadVocab();
+  }
+
+  async function loadVocab() {
+    // Try Supabase first
+    try {
+      var result = await sb.from('vocab').select('*').eq('user_id', currentUser.id).order('created_at', {ascending: true});
+      if (result.data) {
+        vocabWords = result.data.map(function(r) {
+          return {id: r.id, arabic: r.arabic, example: r.example||'', meaning: r.meaning||''};
+        });
+        vocabLoaded = true;
+        renderVocab();
+        return;
+      }
+    } catch(e) {}
+    // Fallback: localStorage
+    try {
+      var stored = localStorage.getItem('vocab_' + currentUser.id);
+      if (stored) vocabWords = JSON.parse(stored);
+    } catch(e) {}
+    vocabLoaded = true;
+    renderVocab();
+  }
+
+  function saveVocabLocal() {
+    try { localStorage.setItem('vocab_' + currentUser.id, JSON.stringify(vocabWords)); } catch(e) {}
+  }
+
+  window.addVocabWord = async function() {
+    var arabic  = document.getElementById('vocab-arabic').value.trim();
+    var example = document.getElementById('vocab-example').value.trim();
+    var meaning = document.getElementById('vocab-meaning').value.trim();
+    if (!arabic && !meaning) { alert('Please enter at least the Arabic word or a meaning.'); return; }
+    var word = {id: Date.now(), arabic: arabic, example: example, meaning: meaning};
+    // Try Supabase
+    try {
+      var result = await sb.from('vocab').insert({
+        id: word.id, arabic: arabic, example: example, meaning: meaning,
+        user_id: currentUser.id, created_at: new Date().toISOString()
+      });
+      if (result.error) throw result.error;
+    } catch(e) {
+      // Fallback to local
+    }
+    vocabWords.push(word);
+    saveVocabLocal();
+    document.getElementById('vocab-arabic').value = '';
+    document.getElementById('vocab-example').value = '';
+    document.getElementById('vocab-meaning').value = '';
+    renderVocab();
+    // Scroll to new row
+    setTimeout(function() {
+      var tbl = document.getElementById('vocab-table-wrap');
+      if (tbl) tbl.scrollIntoView({behavior:'smooth', block:'nearest'});
+    }, 100);
+  };
+
+  window.deleteVocabWord = async function(id) {
+    if (!confirm('Remove this word from your vocabulary list?')) return;
+    try { await sb.from('vocab').delete().eq('id', id); } catch(e) {}
+    vocabWords = vocabWords.filter(function(w) { return w.id !== id; });
+    saveVocabLocal();
+    renderVocab();
+  };
+
+  window.renderVocab = function() {
+    var search = (document.getElementById('vocab-search') ? document.getElementById('vocab-search').value : '').toLowerCase().trim();
+    var filtered = vocabWords.filter(function(w) {
+      if (!search) return true;
+      return (w.arabic||'').toLowerCase().indexOf(search) !== -1 ||
+             (w.meaning||'').toLowerCase().indexOf(search) !== -1 ||
+             (w.example||'').toLowerCase().indexOf(search) !== -1;
+    });
+
+    // Stats
+    var stats = document.getElementById('vocab-stats');
+    if (stats) {
+      stats.textContent = search
+        ? filtered.length + ' of ' + vocabWords.length + ' words match'
+        : vocabWords.length + ' word' + (vocabWords.length !== 1 ? 's' : '');
+    }
+
+    var body = document.getElementById('vocab-body');
+    if (!body) return;
+    if (!filtered.length) {
+      body.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--ink-faint);font-size:13px">'
+        + (search ? 'No matches for "' + escHtml(search) + '"' : 'No words yet — add your first vocabulary word above')
+        + '</td></tr>';
+      return;
+    }
+
+    function hl(text) {
+      if (!search || !text) return escHtml(text || '');
+      var escaped = escHtml(text);
+      var escapedSearch = escHtml(search);
+      var re = new RegExp('(' + escapedSearch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+      return escaped.replace(re, '<mark class="vocab-highlight">$1</mark>');
+    }
+
+    body.innerHTML = filtered.map(function(w) {
+      return '<tr>'
+        + '<td class="vocab-ar" contenteditable="true" onblur="editVocabField('+w.id+',\'arabic\',this.textContent)">'+hl(w.arabic)+'</td>'
+        + '<td class="vocab-ex" contenteditable="true" onblur="editVocabField('+w.id+',\'example\',this.textContent)">'+hl(w.example)+'</td>'
+        + '<td class="vocab-en" contenteditable="true" onblur="editVocabField('+w.id+',\'meaning\',this.textContent)">'+hl(w.meaning)+'</td>'
+        + '<td class="vocab-del"><button onclick="deleteVocabWord('+w.id+')" title="Remove">&#10005;</button></td>'
+        + '</tr>';
+    }).join('');
+  };
+
+  window.editVocabField = async function(id, field, value) {
+    var word = vocabWords.find(function(w) { return w.id === id; });
+    if (!word) return;
+    word[field] = value.trim();
+    try {
+      var update = {};
+      update[field] = value.trim();
+      await sb.from('vocab').update(update).eq('id', id);
+    } catch(e) {}
+    saveVocabLocal();
+  };
 
 })();
 </script>
