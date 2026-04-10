@@ -2310,24 +2310,72 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
   var morphLang = 'en'; // 'en', 'ar', 'both'
 
+  // Map Arabic stored values -> English
+  var AR_TO_EN = {
+    // types
+    'اسم':'Noun', 'علم':'Proper noun', 'ضمير':'Pronoun',
+    'اسم اشارة':'Demonstrative', 'اسم موصول':'Relative pronoun',
+    'ظرف زمان':'Time adverb', 'ظرف مكان':'Place adverb',
+    'فعل':'Verb', 'اسم فعل':'Verbal noun', 'شرطية':'Conditional',
+    'استفهامية':'Interrogative',
+    // particles
+    'حرف جر':'Preposition', 'حرف عطف':'Conjunction',
+    'حرف نفي':'Negation', 'حرف استقبال':'Future particle',
+    'لام التوكيد':'Emphasis lam', 'حرف نداء':'Vocative',
+    'حرف مصدري':'Subordinating', 'حرف نصب':'Accusative particle',
+    'أداة استثناء':'Exception', 'حرف تحقيق':'Certainty',
+    'أداة حصر':'Restriction', 'حرف جواب':'Response',
+    'حرف سببية':'Causative', 'حرف ابتداء':'Inceptive',
+    'حرف استئنافية':'Resumptive', 'حرف نهي':'Prohibition',
+    'لام الامر':'Imperative lam', 'حرف زائد':'Redundant particle',
+    'حرف تفسير':'Explanatory', 'حرف استدراك':'Retraction',
+    'حرف ردع':'Deterrent', 'حرف حال':'Circumstantial',
+    'واو المعية':'Accompaniment waw', 'حرف تسوية':'Equalization',
+    'حرف تحضيض':'Incitement', 'حرف تفصيل':'Enumerative',
+    'حرف كاف':'Preventive', 'حرف اضراب':'Resumptive',
+    'حرف واقع في جواب الشرط':'Result particle',
+    'حرف فجاءة':'Surprise', 'حرف تنبيه':'Attention',
+    'لام البعد':'Distance lam', 'حرف خطاب':'Address particle',
+    'حروف مقطعة':'Disconnected letters', 'لام التعليل':'Purpose lam',
+    'ال':'Definite article',
+    // noun forms
+    'اسم فاعل':'Active participle', 'اسم مفعول':'Passive participle',
+    'مصدر':'Verbal noun (masdar)',
+    // case
+    'مرفوع':'Nominative', 'منصوب':'Accusative', 'مجرور':'Genitive',
+    // tense
+    'ماض':'Past', 'مضارع':'Present/Future', 'أمر':'Imperative',
+    // mood
+    'مجزوم':'Jussive',
+    // gender
+    'مذكر':'Masculine', 'مؤنث':'Feminine',
+    // number
+    'مفرد':'Singular', 'مثنى':'Dual', 'جمع':'Plural',
+    // person
+    'متكلم':'1st person', 'مخاطب':'2nd person', 'غائب':'3rd person',
+    // position
+    'بادئة':'Prefix', 'لاحقة':'Suffix',
+    // definiteness
+    'نكرة':'Indefinite',
+    // attr
+    'نعت':'Adjective', 'لم يسمّ فاعله':'Passive (unknown doer)'
+  };
+
   function morphEnVal(key, val) {
-    // Try specific lookup first
-    var lookup = MORPH_EN[key + '_' + val] || MORPH_EN[key + '_' + val.replace(/\s.*/, '')];
-    if (lookup) return lookup;
-    // Generic fallbacks for gender/number combos
-    if (key === 'gn') {
-      return val.split('、').map(function(v) {
-        if (v==='مذكر') return 'Masculine';
-        if (v==='مؤنث') return 'Feminine';
-        if (v==='مفرد') return 'Singular';
-        if (v==='مثنى') return 'Dual';
-        if (v==='جمع') return 'Plural';
-        return v;
-      }).join(', ');
+    if (!val) return val;
+    // Direct Arabic->English lookup
+    if (AR_TO_EN[val]) return AR_TO_EN[val];
+    // For gender+number combos (comma-separated Arabic)
+    if (key === 'gn' || (val.indexOf('،') !== -1 || val.indexOf(',') !== -1)) {
+      var sep = val.indexOf('،') !== -1 ? '،' : ',';
+      var parts = val.split(sep).map(function(v) {
+        return AR_TO_EN[v.trim()] || v.trim();
+      });
+      return parts.join(' · ');
     }
-    // For root and lemma, show as-is (Arabic script)
+    // Root, lemma, verb form stay as Arabic
     if (key === 'r' || key === 'l' || key === 'vf') return val;
-    return val; // fallback to Arabic
+    return val;
   }
 
   function separateLetters(str) {
