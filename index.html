@@ -383,12 +383,12 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
         <div id="search-summary" style="font-size:12px;color:var(--ink-muted);min-height:18px"></div>
         <div style="display:flex;gap:4px">
-          <button id="view-cards-btn" onclick="setNotesView('cards')" title="Card view" style="padding:5px 9px;border:1.5px solid var(--teal);border-radius:var(--radius);background:var(--teal);color:white;cursor:pointer;font-size:13px;line-height:1">&#9783;</button>
-          <button id="view-table-btn" onclick="setNotesView('table')" title="Table view" style="padding:5px 9px;border:1.5px solid var(--border);border-radius:var(--radius);background:white;color:var(--ink-muted);cursor:pointer;font-size:13px;line-height:1">&#9783;&#9783;</button>
+          <button id="view-cards-btn" onclick="setNotesView('cards')" title="Card view" style="padding:5px 9px;border:1.5px solid var(--border);border-radius:var(--radius);background:white;color:var(--ink-muted);cursor:pointer;font-size:13px;line-height:1">&#9783;</button>
+          <button id="view-table-btn" onclick="setNotesView('table')" title="Table view" style="padding:5px 9px;border:1.5px solid var(--teal);border-radius:var(--radius);background:var(--teal);color:white;cursor:pointer;font-size:13px;line-height:1">&#9783;&#9783;</button>
         </div>
       </div>
-      <div class="notes-list" id="notes-list"><div class="empty-state"><div class="empty-icon">&#128214;</div><h3>Loading notes...</h3></div></div>
-      <div id="notes-table-wrap" style="display:none;overflow-x:auto;border:1.5px solid var(--border);border-radius:var(--radius-lg);background:white">
+      <div class="notes-list" id="notes-list" style="display:none"><div class="empty-state"><div class="empty-icon">&#128214;</div><h3>Loading notes...</h3></div></div>
+      <div id="notes-table-wrap" style="overflow-x:auto;border:1.5px solid var(--border);border-radius:var(--radius-lg);background:white">
         <table id="notes-table" style="width:100%;border-collapse:collapse;min-width:600px">
           <thead>
             <tr style="background:var(--surface-2);border-bottom:1.5px solid var(--border)">
@@ -475,6 +475,20 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
 
   </main>
+
+<!-- VIEW NOTE MODAL -->
+<div id="view-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;overflow-y:auto;padding:1rem">
+  <div style="background:white;border-radius:var(--radius-lg);padding:1.5rem;max-width:640px;margin:2rem auto;position:relative">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <div id="view-modal-title" style="font-family:Lora,serif;font-size:1.1rem;font-weight:600;color:var(--teal)"></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="view-modal-edit-btn" onclick="" style="padding:5px 14px;background:var(--teal);color:white;border:none;border-radius:var(--radius);font-family:DM Sans,sans-serif;font-size:13px;font-weight:500;cursor:pointer">Edit</button>
+        <button onclick="closeViewModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--ink-faint);padding:0 4px">&#10005;</button>
+      </div>
+    </div>
+    <div id="view-modal-body" style="font-size:14px;line-height:1.7;color:var(--ink)"></div>
+  </div>
+</div>
 
 <!-- EDIT MODAL -->
 <div id="edit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;overflow-y:auto;padding:1rem">
@@ -857,7 +871,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       saveBtn.disabled=false;return;
     }
     notes.unshift({id:row.id,date:row.note_date,editedAt:'',timestamps:[],surahNum:row.surah_num,surahName:row.surah_name,ayah:row.ayah,level:level,arabic:fetchedArabic,translation:fetchedTrans,wordByWord:fetchedWords.length?JSON.stringify(fetchedWords):null,groupNotes:groupNotes,groupNotesAr:document.getElementById('group-notes-ar').innerHTML.trim()||'',reflection:reflection,reflectionAr:document.getElementById('reflection-ar').innerHTML.trim()||'',action:action,youtubeLink:row.youtube_link||'',attachments:attachments});
-    renderNotes();renderStats();populateFilter();
+    renderNotes();renderStats();populateFilter();if(notesView==='table')renderNotesTable();
     badge('ok','Synced');saveMsg.className='status-msg';saveMsg.textContent='';
     ['group-notes','group-notes-ar','reflection','reflection-ar'].forEach(function(id){document.getElementById(id).innerHTML='';});
     ['action','youtube-link'].forEach(function(id){document.getElementById(id).value='';}); 
@@ -877,7 +891,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     sb.from('notes').delete().eq('id',id).then(function(result){
       if (result.error){badge('err','Delete failed');alert('Could not delete: '+result.error.message);return;}
       notes=notes.filter(function(n){return n.id!==id;});
-      renderNotes();renderStats();populateFilter();badge('ok','Synced');
+      renderNotes();renderStats();populateFilter();if(notesView==='table')renderNotesTable();badge('ok','Synced');
     });
   };
 
@@ -1247,13 +1261,20 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     vidCont.style.display = 'none';
     if (vidIframe) vidIframe.src = '';
     if (vidBtn) vidBtn.style.display = 'none';
+    // Reset wbw button text
+    var wbwBtnEl = document.getElementById('edit-wbw-toggle-btn');
+    if (wbwBtnEl) { var wb = wbwBtnEl.querySelector('button'); if(wb) wb.textContent = '\u273b Word by word'; }
     if (document.getElementById('edit-ts-list')) document.getElementById('edit-ts-list').innerHTML = '';
     if (note.arabic || note.translation || note.youtubeLink) {
       ayahSection.style.display = 'block';
       arEl.textContent = note.arabic || '';
       trEl.textContent = note.translation || '';
       wbwBtn.style.display = note.wordByWord ? 'block' : 'none';
-      if (vidBtn) vidBtn.style.display = note.youtubeLink ? 'block' : 'none';
+      if (vidBtn) {
+      vidBtn.style.display = note.youtubeLink ? 'block' : 'none';
+      var vbtnEl = vidBtn.querySelector('button');
+      if (vbtnEl) vbtnEl.innerHTML = '&#9654; Watch video';
+    }
     } else {
       ayahSection.style.display = 'none';
     }
@@ -2570,6 +2591,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         +'<span style="font-size:11px;font-weight:600;color:var(--teal);padding:2px 7px;background:var(--teal-light);border-radius:99px;border:1px solid #9fe1cb;flex-shrink:0">'+ts.label+'</span>'
         +(ts.comment?'<span style="font-size:12px;color:var(--ink-mid);flex:1">'+escHtml(ts.comment)+'</span>':'<span style="font-size:12px;color:var(--ink-faint);flex:1;font-style:italic">No comment</span>')
         +(isPending?'<span style="font-size:10px;color:var(--teal);background:var(--teal-light);padding:1px 5px;border-radius:99px">unsaved</span>':'')
+        +'<button data-idx="'+i+'" data-pending="'+(isPending?1:0)+'" onclick="editModalDeleteTs(this)" style="background:none;border:none;cursor:pointer;color:var(--ink-faint);font-size:14px;padding:0 2px;flex-shrink:0">&#10005;</button>'
         +'</div>';
     }).join('');
   }
@@ -2586,6 +2608,27 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     editModalTsBuffer.push({time:secs, label:formatTime(secs), comment:comment});
     editModalTsBuffer.sort(function(a,b){return a.time-b.time;});
     document.getElementById('edit-ts-comment').value = '';
+    renderEditTsList();
+  };
+
+  window.editModalDeleteTs = function(btn) {
+    if (!editingNote) return;
+    var idx = parseInt(btn.getAttribute('data-idx'));
+    var isPending = btn.getAttribute('data-pending') === '1';
+    var saved = editingNote.timestamps || [];
+    var all = saved.concat(editModalTsBuffer);
+    all.sort(function(a,b){return a.time-b.time;});
+    var ts = all[idx];
+    if (!ts) return;
+    if (isPending) {
+      editModalTsBuffer = editModalTsBuffer.filter(function(t){return !(t.time===ts.time&&t.comment===ts.comment);});
+    } else {
+      editingNote.timestamps = saved.filter(function(t){return !(t.time===ts.time&&t.comment===ts.comment);});
+      // Persist deletion
+      sb.from('notes').update({timestamps:editingNote.timestamps}).eq('id',editingNote.id);
+      var n = notes.find(function(n){return n.id===editingNote.id;});
+      if (n) n.timestamps = editingNote.timestamps;
+    }
     renderEditTsList();
   };
 
@@ -2960,7 +3003,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
 
   // ── NOTES TABLE / CARD VIEW TOGGLE ──
-  var notesView = 'cards'; // 'cards' or 'table'
+  var notesView = 'table'; // 'cards' or 'table'
 
   window.setNotesView = function(view) {
     notesView = view;
@@ -3054,15 +3097,62 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     }).join('');
   }
 
-  window.viewNoteCard = function(id) {
-    // Switch to card view, scroll to the note
-    setNotesView('cards');
-    renderNotes();
-    setTimeout(function() {
-      var el = document.getElementById('note-card-' + id);
-      if (el) el.scrollIntoView({behavior:'smooth', block:'center'});
-    }, 100);
+  window.closeViewModal = function() {
+    document.getElementById('view-modal').style.display = 'none';
+    document.body.style.overflow = '';
   };
+
+  window.viewNoteCard = function(id) {
+    var note = notes.find(function(n){return n.id===id;});
+    if (!note) return;
+    var title = (note.surahNum?note.surahNum+'. ':'')+note.surahName+(note.ayah?' — Aayah '+note.ayah:'');
+    document.getElementById('view-modal-title').textContent = title;
+    document.getElementById('view-modal-edit-btn').onclick = function(){ closeViewModal(); editNote(id); };
+    var b = '';
+    // Date
+    b += '<div style="font-size:12px;color:var(--ink-muted);margin-bottom:12px">'
+      + '&#128197; ' + escHtml(note.date)
+      + (note.editedAt ? '  ·  &#9998; edited ' + escHtml(note.editedAt) : '')
+      + '  ·  <span style="background:var(--teal-light);color:var(--teal);padding:2px 8px;border-radius:99px;font-size:11px">'+escHtml(note.level)+'</span>'
+      + '</div>';
+    // Arabic
+    if (note.arabic) b += '<div style="font-family:Amiri,serif;font-size:1.4rem;direction:rtl;text-align:right;line-height:2;background:var(--teal-pale);border-radius:var(--radius);padding:12px;margin-bottom:10px">'+escHtml(note.arabic)+'</div>';
+    // Translation
+    if (note.translation) b += '<div style="font-style:italic;color:var(--ink-mid);margin-bottom:12px;font-size:13px">'+escHtml(note.translation)+'</div>';
+    // Notes
+    if (note.groupNotes) b += '<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-muted);margin-bottom:4px">Study group notes</div><div style="line-height:1.7">'+note.groupNotes+'</div></div>';
+    if (note.groupNotesAr) b += '<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-muted);margin-bottom:4px">Study group notes (Arabic)</div><div style="font-family:Amiri,serif;font-size:1.1rem;direction:rtl;text-align:right;line-height:1.8">'+note.groupNotesAr+'</div></div>';
+    if (note.reflection) b += '<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-muted);margin-bottom:4px">Personal reflection</div><div style="line-height:1.7">'+note.reflection+'</div></div>';
+    if (note.reflectionAr) b += '<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-muted);margin-bottom:4px">Reflection (Arabic)</div><div style="font-family:Amiri,serif;font-size:1.1rem;direction:rtl;text-align:right;line-height:1.8">'+note.reflectionAr+'</div></div>';
+    if (note.action) b += '<div style="margin-bottom:10px"><span style="background:var(--teal-light);color:var(--teal);padding:4px 12px;border-radius:99px;font-size:13px">&#10003; '+escHtml(note.action)+'</span></div>';
+    // Timestamps
+    if (note.timestamps&&note.timestamps.length) {
+      b += '<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-muted);margin-bottom:6px">Timestamps</div>';
+      note.timestamps.slice().sort(function(a,b){return a.time-b.time;}).forEach(function(ts){
+        b += '<div style="display:flex;gap:8px;align-items:center;padding:4px 0;border-bottom:1px solid var(--surface-2)">'
+          +'<span style="font-size:11px;font-weight:600;color:var(--teal);padding:2px 8px;background:var(--teal-light);border-radius:99px;border:1px solid #9fe1cb;flex-shrink:0">'+ts.label+'</span>'
+          +(ts.comment?'<span style="font-size:12px;color:var(--ink-mid)">'+escHtml(ts.comment)+'</span>':'')+'</div>';
+      });
+      b += '</div>';
+    }
+    // Attachments
+    if (note.attachments&&note.attachments.length) {
+      b += '<div><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-muted);margin-bottom:6px">Attachments</div>';
+      note.attachments.forEach(function(a){
+        var icon = a.type==='application/pdf'?'&#128196;':'&#128247;';
+        b += '<div style="font-size:13px;padding:4px 0">'+icon+' '+escHtml(a.name)+'</div>';
+      });
+      b += '</div>';
+    }
+    document.getElementById('view-modal-body').innerHTML = b;
+    document.getElementById('view-modal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  };
+
+  // Close view modal on backdrop click
+  document.getElementById('view-modal').addEventListener('click', function(e){
+    if (e.target === this) closeViewModal();
+  });
 
 })();
 </script>
