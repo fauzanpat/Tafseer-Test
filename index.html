@@ -170,10 +170,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .root-tip-loading{font-size:10px;color:rgba(255,255,255,0.5);font-style:italic}
 
 /* morphology panel */
-.morph-panel{position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);background:white;border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:12px 14px;z-index:300;min-width:240px;max-width:320px;box-shadow:0 8px 24px rgba(0,0,0,0.12);display:none;direction:ltr}
+.morph-panel{background:white;border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:12px 14px;min-width:240px;max-width:320px;box-shadow:0 8px 24px rgba(0,0,0,0.2);display:none;direction:ltr}
 .morph-panel.visible{display:block}
-.morph-panel::before{content:'';position:absolute;bottom:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-bottom-color:var(--border)}
-.morph-panel::after{content:'';position:absolute;bottom:calc(100% - 1px);left:50%;transform:translateX(-50%);border:6px solid transparent;border-bottom-color:white}
 .morph-word-ar{font-family:"Amiri",serif;font-size:1.8rem;color:var(--ink);margin-bottom:8px;text-align:center;direction:rtl}
 .morph-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:4px 0;border-bottom:1px solid var(--surface-2);font-size:12px}
 .morph-row:last-child{border-bottom:none}
@@ -2194,7 +2192,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         var morphPanelId = 'morp-' + (surahNum||0) + '-' + ayahNum + '-' + wordPos;
         html += '<div class="wbw-word" id="'+tipId+'" data-sn="'+surahNum+'" data-an="'+ayahNum+'" data-wp="'+wordPos+'" data-ar="'+encodeURIComponent(w.arabic)+'" onclick="wbwClick(this)">'
           + '<div class="root-tip"><span class="root-tip-label">Root</span><span class="root-tip-arabic root-tip-loading" id="'+tipId+'-root">...</span></div>'
-          + '<div class="morph-panel" id="'+morphPanelId+'"></div>'
           + '<div class="wbw-arabic">'+escHtml(w.arabic)+'</div>'
           + '<div class="wbw-translit">'+escHtml(w.translit)+'</div>'
           + '<div class="wbw-meaning">'+escHtml(w.meaning)+'</div>'
@@ -2217,7 +2214,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
             if (!rootEl) return;
             var root = getRootForWord(surahNum, ayahNum, wordPos);
             if (root) {
-              rootEl.textContent = root;
+              rootEl.textContent = root.split('').join('\u200c \u200c');
               rootEl.classList.remove('root-tip-loading');
             } else {
               rootEl.textContent = '\u2014';
@@ -2430,9 +2427,10 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
   function closeMorphPanel() {
     if (activeMorphPanel) {
-      activeMorphPanel.classList.remove('visible');
+      activeMorphPanel.style.display = 'none';
       activeMorphPanel = null;
     }
+    if (sharedMorphPanel) sharedMorphPanel.style.display = 'none';
   }
 
   var editModalYtPlayer = null;
@@ -2680,24 +2678,48 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     showMorphPanel(el, ar, sn, an, wp);
   };
 
+  // Shared floating morph panel
+  var sharedMorphPanel = null;
+  function getSharedMorphPanel() {
+    if (!sharedMorphPanel) {
+      sharedMorphPanel = document.createElement('div');
+      sharedMorphPanel.className = 'morph-panel';
+      sharedMorphPanel.id = 'shared-morph-panel';
+      sharedMorphPanel.style.position = 'fixed';
+      sharedMorphPanel.style.zIndex = '9999';
+      document.body.appendChild(sharedMorphPanel);
+      sharedMorphPanel.addEventListener('click', function(e){ e.stopPropagation(); });
+    }
+    return sharedMorphPanel;
+  }
+
   window.showMorphPanel = function(btn, wordAr, surah, ayah, wordPos) {
-    // Close any open panel first
     closeMorphPanel();
+    var panel = getSharedMorphPanel();
 
-    var panelId = 'morp-' + surah + '-' + ayah + '-' + wordPos;
-    var panel = document.getElementById(panelId);
-    if (!panel) return;
-
-    // Show loading state first, then fill
-    panel.innerHTML = '<div style="font-size:12px;color:var(--ink-muted);padding:4px;text-align:center">جاري التحميل...</div>';
-    panel.classList.add('visible');
+    // Position panel below the clicked word
+    var rect = btn.getBoundingClientRect();
+    var panelLeft = rect.left + rect.width/2;
+    var panelTop = rect.bottom + 8;
+    // Keep within viewport
+    panel.style.top = panelTop + 'px';
+    panel.style.left = panelLeft + 'px';
+    panel.style.transform = 'translateX(-50%)';
+    // Check if it goes off bottom
+    panel.style.display = 'block';
     activeMorphPanel = panel;
 
+    panel.innerHTML = '<div style="font-size:12px;color:var(--ink-muted);padding:4px;text-align:center">Loading...</div>';
+
     loadMorphData(function() {
-      var p = document.getElementById(panelId);
-      if (!p) return;
-      buildMorphHtml(wordAr, surah, ayah, wordPos, p);
-      activeMorphPanel = p;
+      buildMorphHtml(wordAr, surah, ayah, wordPos, panel);
+      // Reposition if off-screen after content loads
+      requestAnimationFrame(function() {
+        var pr = panel.getBoundingClientRect();
+        if (pr.right > window.innerWidth) panel.style.left = (window.innerWidth - pr.width - 10) + 'px';
+        if (pr.left < 0) panel.style.left = '10px';
+        if (pr.bottom > window.innerHeight) panel.style.top = (rect.top - pr.height - 8) + 'px';
+      });
     });
   };
 
@@ -2809,39 +2831,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     }
 
     function hl(text) {
-      if (!search || !text) return escHtml(text || '');
-      var escaped = escHtml(text);
-      var escapedSearch = escHtml(search);
-      var re = new RegExp('(' + escapedSearch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
-      return escaped.replace(re, '<mark class="vocab-highlight">$1</mark>');
-    }
-
-    body.innerHTML = filtered.map(function(w) {
-      return '<tr>'
-        + '<td class="vocab-ar" contenteditable="true" onblur="editVocabField('+w.id+',\'arabic\',this.textContent)">'+hl(w.arabic)+'</td>'
-        + '<td class="vocab-ex" contenteditable="true" onblur="editVocabField('+w.id+',\'example\',this.textContent)">'+hl(w.example)+'</td>'
-        + '<td class="vocab-en" contenteditable="true" onblur="editVocabField('+w.id+',\'meaning\',this.textContent)">'+hl(w.meaning)+'</td>'
-        + '<td class="vocab-del"><button onclick="deleteVocabWord('+w.id+')" title="Remove">&#10005;</button></td>'
-        + '</tr>';
-    }).join('');
-  };
-
-  window.editVocabField = async function(id, field, value) {
-    var word = vocabWords.find(function(w) { return w.id === id; });
-    if (!word) return;
-    word[field] = value.trim();
-    try {
-      var update = {};
-      update[field] = value.trim();
-      await sb.from('vocab').update(update).eq('id', id);
-    } catch(e) {}
-    saveVocabLocal();
-  };
-
-})();
-</script>
-</body>
-</html>  function hl(text) {
       if (!search || !text) return escHtml(text || '');
       var escaped = escHtml(text);
       var escapedSearch = escHtml(search);
