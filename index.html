@@ -173,9 +173,9 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .morph-panel.visible{display:block}
 .morph-panel.visible{display:block}
 .morph-word-ar{font-family:"Amiri",serif;font-size:1.8rem;color:var(--ink);margin-bottom:8px;text-align:center;direction:rtl}
-.morph-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid var(--surface-2);font-size:12px}
+.morph-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:5px 0;border-bottom:1px solid var(--surface-2)}
 .morph-row:last-child{border-bottom:none}
-.morph-label-en{color:var(--ink-muted);font-size:11px;white-space:nowrap;direction:ltr;text-align:left;flex-shrink:0}
+.morph-label-en{color:var(--ink-muted);font-size:12px;white-space:nowrap;direction:ltr;text-align:left;flex-shrink:0}
 .morph-label-ar{color:var(--ink-muted);white-space:nowrap;direction:rtl;text-align:right;flex-shrink:0;font-family:"Amiri",serif;font-size:13px}
 .morph-val-en{color:var(--ink);font-size:13px;direction:ltr;text-align:right;font-weight:500}
 .morph-val-ar{color:var(--ink);font-family:"Amiri",serif;font-size:1.15rem;direction:rtl;text-align:right}
@@ -994,6 +994,20 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       return;
     }
     if(filtered.some(function(n){return n.wordByWord;})) loadRootsData(function(){});
+    // Pre-load roots for word-by-word tooltips
+    if (filtered.some(function(n){return n.wordByWord;})) {
+      loadRootsData(function() {
+        // Update any note-wbw-word elements that have empty data-root
+        document.querySelectorAll('.note-wbw-word[data-sn]').forEach(function(el) {
+          if (el.getAttribute('data-root')) return; // already filled
+          var sn = parseInt(el.getAttribute('data-sn'));
+          var an = parseInt(el.getAttribute('data-an'));
+          var wp = parseInt(el.getAttribute('data-wp'));
+          var root = getRootForWord(sn, an, wp);
+          if (root) el.setAttribute('data-root', root.split('').join('\u200c \u200c'));
+        });
+      });
+    }
     list.innerHTML=filtered.map(function(n){
       var h='<div class="note-card">';
       h+='<div class="note-card-top"><div>';
@@ -1020,9 +1034,15 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         wbd.forEach(function(ad,wai){if(!ad||!ad.words)return;
           var noteAn = noteAf + wai;
           ad.words.forEach(function(w,wi){
+            var nwId = 'nwbw-'+n.id+'-'+noteAn+'-'+(wi+1);
             var root = (noteSn&&rootsData)?getRootForWord(noteSn,noteAn,wi+1):null;
-            var rootSep = root ? root.split('').join('\u200c \u200c') : '\u2014';
-            h+='<div class="note-wbw-word" data-root="'+escHtml(rootSep)+'" onmouseenter="showSharedRootTip(this)" onmouseleave="hideSharedRootTip()">'
+            var rootSep = root ? root.split('').join('\u200c \u200c') : '';
+            h+='<div class="note-wbw-word" id="'+nwId+'"'
+            +' data-sn="'+noteSn+'" data-an="'+noteAn+'" data-wp="'+(wi+1)+'"'
+            +' data-ar="'+encodeURIComponent(w.arabic)+'"'
+            +' data-root="'+escHtml(rootSep)+'"'
+            +' onmouseenter="showSharedRootTip(this)" onmouseleave="hideSharedRootTip()"'
+            +' onclick="wbwClick(this)" style="cursor:pointer">'
             +'<div class="note-wbw-arabic">'+escHtml(w.arabic)+'</div>'
             +'<div class="note-wbw-translit">'+escHtml(w.translit)+'</div>'
             +'<div class="note-wbw-meaning">'+escHtml(w.meaning)+'</div>'
