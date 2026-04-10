@@ -265,7 +265,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <button class="tab active" id="tab-btn-add">Add note</button>
       <button class="tab" id="tab-btn-browse">My notes</button>
       <button class="tab" id="tab-btn-overview">Overview</button>
-      <button class="tab" id="tab-btn-video">&#9654; Video</button>
       <button class="tab" id="tab-btn-vocab">&#128218; Vocab</button>
     </div>
   </header>
@@ -388,46 +387,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <div id="surah-breakdown"></div>
     </div>
 
-    <!-- VIDEO STUDY TAB -->
-    <div class="section" id="tab-video">
-      <div id="video-setup" style="margin-top:.25rem">
-        <div class="form-block">
-          <label>YouTube URL</label>
-          <div style="display:flex;gap:8px">
-            <input type="text" id="video-url-input" placeholder="https://youtube.com/watch?v=...">
-            <button onclick="loadVideo()" style="padding:10px 16px;background:var(--teal);color:white;border:none;border-radius:var(--radius);font-family:DM Sans,sans-serif;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap">Load</button>
-          </div>
-        </div>
-        <div id="video-recent-links" style="margin-top:.5rem"></div>
-      </div>
 
-      <div id="video-player-wrap" style="display:none">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
-          <div id="video-title" style="font-family:Lora,serif;font-size:.95rem;font-weight:600;color:var(--ink);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:.5rem"></div>
-          <button onclick="closeVideo()" style="background:none;border:1px solid var(--border);border-radius:var(--radius);padding:4px 10px;font-size:12px;cursor:pointer;color:var(--ink-muted);flex-shrink:0">&#10005; Close</button>
-        </div>
-        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:var(--radius-lg);margin-bottom:1rem">
-          <iframe id="yt-iframe" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:var(--radius-lg)" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
-        </div>
-        <div style="background:white;border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem">
-          <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-muted);margin-bottom:.75rem">Timestamp notes</div>
-          <div style="display:flex;gap:8px;margin-bottom:.75rem">
-            <button onclick="grabTimestamp()" style="padding:8px 14px;background:var(--teal-light);color:var(--teal);border:1px solid #9fe1cb;border-radius:var(--radius);font-family:DM Sans,sans-serif;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;flex-shrink:0">&#9201; Stamp</button>
-            <input type="text" id="ts-comment-input" placeholder="Type your comment then tap Stamp, or stamp first...">
-          </div>
-          <div style="display:flex;gap:6px;margin-bottom:.75rem;flex-wrap:wrap">
-            <select id="ts-lang" style="width:auto;flex-shrink:0;font-size:13px;padding:8px 10px">
-              <option value="en">English</option>
-              <option value="ar">Arabic</option>
-            </select>
-            <button onclick="saveVideoNote()" style="padding:8px 16px;background:var(--teal);color:white;border:none;border-radius:var(--radius);font-family:DM Sans,sans-serif;font-size:13px;font-weight:500;cursor:pointer">Save as note</button>
-            <button onclick="clearTsComments()" style="padding:8px 12px;background:none;border:1px solid var(--border);border-radius:var(--radius);font-family:DM Sans,sans-serif;font-size:13px;cursor:pointer;color:var(--ink-muted)">Clear all</button>
-          </div>
-          <div id="ts-comments-list" style="display:flex;flex-direction:column;gap:6px;max-height:320px;overflow-y:auto"></div>
-          <div id="ts-empty" style="text-align:center;padding:2rem;color:var(--ink-faint);font-size:13px">Tap &#9201; Stamp while the video plays to capture a timestamp</div>
-        </div>
-      </div>
-    </div>
 
     <!-- VOCAB TAB -->
     <div class="section" id="tab-vocab">
@@ -574,17 +534,15 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
   // ── TABS ──
   function showTab(id) {
-    ['add','browse','overview','video','vocab'].forEach(function(t) {
+    ['add','browse','overview','vocab'].forEach(function(t) {
       document.getElementById('tab-btn-' + t).classList.toggle('active', t === id);
       document.getElementById('tab-' + t).classList.toggle('active', t === id);
     });
-    if(id==='video') initVideoTab();
     if(id==='vocab') initVocabTab();
   }
   document.getElementById('tab-btn-add').addEventListener('click', function() { showTab('add'); });
   document.getElementById('tab-btn-browse').addEventListener('click', function() { showTab('browse'); });
   document.getElementById('tab-btn-overview').addEventListener('click', function() { showTab('overview'); });
-  document.getElementById('tab-btn-video').addEventListener('click', function() { showTab('video'); });
   document.getElementById('tab-btn-vocab').addEventListener('click', function() { showTab('vocab'); });
 
   // ── AUTH ──
@@ -840,7 +798,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       saveMsg.textContent='Could not save. '+result.error.message;
       saveBtn.disabled=false;return;
     }
-    notes.unshift({id:row.id,date:row.note_date,editedAt:'',surahNum:row.surah_num,surahName:row.surah_name,ayah:row.ayah,level:level,arabic:fetchedArabic,translation:fetchedTrans,wordByWord:fetchedWords.length?JSON.stringify(fetchedWords):null,groupNotes:groupNotes,groupNotesAr:document.getElementById('group-notes-ar').innerHTML.trim()||'',reflection:reflection,reflectionAr:document.getElementById('reflection-ar').innerHTML.trim()||'',action:action,youtubeLink:row.youtube_link||'',attachments:attachments});
+    notes.unshift({id:row.id,date:row.note_date,editedAt:'',timestamps:[],surahNum:row.surah_num,surahName:row.surah_name,ayah:row.ayah,level:level,arabic:fetchedArabic,translation:fetchedTrans,wordByWord:fetchedWords.length?JSON.stringify(fetchedWords):null,groupNotes:groupNotes,groupNotesAr:document.getElementById('group-notes-ar').innerHTML.trim()||'',reflection:reflection,reflectionAr:document.getElementById('reflection-ar').innerHTML.trim()||'',action:action,youtubeLink:row.youtube_link||'',attachments:attachments});
     renderNotes();renderStats();populateFilter();
     badge('ok','Synced');saveMsg.className='status-msg';saveMsg.textContent='';
     ['group-notes','group-notes-ar','reflection','reflection-ar'].forEach(function(id){document.getElementById(id).innerHTML='';});
@@ -882,7 +840,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         return;
       }
       notes=result.data.map(function(r){
-        return {id:r.id,date:r.note_date,editedAt:r.edited_at||'',surahNum:r.surah_num,surahName:r.surah_name,ayah:r.ayah,level:r.level,arabic:r.arabic,translation:r.translation,wordByWord:r.word_by_word||null,groupNotes:r.group_notes,groupNotesAr:r.group_notes_ar||'',reflection:r.reflection,reflectionAr:r.reflection_ar||'',action:r.action,youtubeLink:r.youtube_link||'',attachments:r.attachments||[]};
+        return {id:r.id,date:r.note_date,editedAt:r.edited_at||'',surahNum:r.surah_num,surahName:r.surah_name,ayah:r.ayah,level:r.level,arabic:r.arabic,translation:r.translation,wordByWord:r.word_by_word||null,groupNotes:r.group_notes,groupNotesAr:r.group_notes_ar||'',reflection:r.reflection,reflectionAr:r.reflection_ar||'',action:r.action,youtubeLink:r.youtube_link||'',attachments:r.attachments||[],timestamps:r.timestamps||[]};
       });
       badge('ok','Synced');renderNotes();renderStats();populateFilter();buildSearchChips();
       restoreLastPosition();
@@ -1067,13 +1025,27 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       if(n.action)h+='<div class="nf-full"><div class="nf-label">Action point</div><div class="nf-val"><span class="action-pill">&#10003; '+n.action+'</span></div></div>';
       h+='</div>';
       if(n.youtubeLink) {
-        var ytId = '';
-        var ytMatch = n.youtubeLink.match(/(?:v=|youtu\.be\/|embed\/)([\w-]{11})/);
-        if(ytMatch) ytId = ytMatch[1];
+        var ytId = extractYtId(n.youtubeLink);
+        var embedId = 'yt-embed-'+n.id;
         h+='<div style="margin-top:10px">';
         if(ytId) {
-          h+='<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:var(--radius);margin-bottom:6px">';
-          h+='<iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:var(--radius)" src="https://www.youtube.com/embed/'+ytId+'" allowfullscreen loading="lazy"></iframe>';
+          h+='<button onclick="toggleNoteVideo(this,\'' + ytId + '\',\'' + embedId + '\')" '
+           + 'style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--teal);background:var(--teal-pale);border:1px solid var(--teal-light);border-radius:var(--radius);padding:6px 12px;cursor:pointer;font-family:DM Sans,sans-serif;font-weight:500">&#9654; Watch video</button>';
+          h+='<div id="'+embedId+'" style="display:none;margin-top:8px">';
+          h+='<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:var(--radius-lg);margin-bottom:10px">';
+          h+='<iframe id="'+embedId+'-iframe" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:var(--radius-lg)" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" loading="lazy"></iframe>';
+          h+='</div>';
+          // Timestamp controls
+          h+='<div style="background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:10px">';
+          h+='<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-muted);margin-bottom:8px">Timestamp notes</div>';
+          h+='<div style="display:flex;gap:6px;margin-bottom:8px">';
+          h+='<button onclick="noteStamp(\''+n.id+'\')" style="padding:6px 12px;background:var(--teal-light);color:var(--teal);border:1px solid #9fe1cb;border-radius:var(--radius);font-family:DM Sans,sans-serif;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;flex-shrink:0">&#9201; Stamp</button>';
+          h+='<input type="text" id="'+embedId+'-comment" placeholder="Add a comment then stamp..." style="flex:1;font-size:13px">';
+          h+='<button onclick="noteSaveTs(\''+n.id+'\')" style="padding:6px 12px;background:var(--teal);color:white;border:none;border-radius:var(--radius);font-family:DM Sans,sans-serif;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;flex-shrink:0">Save</button>';
+          h+='</div>';
+          // Existing timestamps
+          h+='<div id="'+embedId+'-tslist">'+renderNoteTimestamps(n.timestamps||[],n.id)+'</div>';
+          h+='</div>';
           h+='</div>';
         } else {
           h+='<a href="'+n.youtubeLink+'" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--teal);text-decoration:none;background:var(--teal-pale);border:1px solid var(--teal-light);border-radius:var(--radius);padding:6px 10px">&#9654; Watch video</a>';
@@ -2254,6 +2226,113 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     } catch(e) {
       cont.innerHTML = '<div style="color:var(--ink-faint);font-size:12px">Could not load word by word data.</div>';
     }
+  };
+
+  // ── NOTE CARD TIMESTAMPS ──
+  var noteYtPlayers = {};  // noteId -> YT.Player instance
+  var noteTsBuffers = {};  // noteId -> [{time, label, comment}] pending (not yet saved)
+
+  function renderNoteTimestamps(timestamps, noteId) {
+    var all = (timestamps || []).concat(noteTsBuffers[noteId] || []);
+    if (!all.length) return '<div style="font-size:12px;color:var(--ink-faint);padding:2px 0">No timestamps yet — tap Stamp while the video plays</div>';
+    all.sort(function(a,b){return a.time-b.time;});
+    return all.map(function(ts, i) {
+      var isPending = (noteTsBuffers[noteId]||[]).some(function(p){return p.time===ts.time&&p.comment===ts.comment;});
+      return '<div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">'
+        +'<button data-nid="'+noteId+'" data-secs="'+ts.time+'" onclick="noteSeekTo(this.dataset.nid,+this.dataset.secs)" style="font-size:11px;font-weight:600;color:var(--teal);cursor:pointer;white-space:nowrap;padding:2px 7px;background:var(--teal-light);border-radius:99px;border:1px solid #9fe1cb;flex-shrink:0">'+ts.label+'</button>'
+        +(ts.comment?'<span style="font-size:12px;color:var(--ink-mid);flex:1;line-height:1.5">'+escHtml(ts.comment)+'</span>':'<span style="font-size:12px;color:var(--ink-faint);flex:1;font-style:italic">No comment</span>')
+        +(isPending?'<span style="font-size:10px;color:var(--teal);font-weight:500;background:var(--teal-light);padding:1px 5px;border-radius:99px;flex-shrink:0">unsaved</span>':'')
+        +'<button data-nid="'+noteId+'" data-idx="'+i+'" data-pend="'+(isPending?'1':'0')+'" onclick="noteDeleteTs(this.dataset.nid,+this.dataset.idx,this.dataset.pend===\'1\')" style="background:none;border:none;cursor:pointer;color:var(--ink-faint);font-size:14px;flex-shrink:0">&#10005;</button>'
+        +'</div>';
+    }).join('');
+  }
+
+  window.toggleNoteVideo = function(btn, ytId, embedId) {
+    var noteId = embedId.replace('yt-embed-','');
+    var wrap = document.getElementById(embedId);
+    if (!wrap) return;
+    var isOpen = wrap.style.display !== 'none';
+    if (isOpen) {
+      wrap.style.display = 'none';
+      var iframe = document.getElementById(embedId+'-iframe');
+      if (iframe) iframe.src = '';
+      if (noteYtPlayers[noteId]) { noteYtPlayers[noteId] = null; }
+      btn.innerHTML = '&#9654; Watch video';
+    } else {
+      wrap.style.display = 'block';
+      var iframe = document.getElementById(embedId+'-iframe');
+      var origin = encodeURIComponent(window.location.origin);
+      if (iframe) {
+        iframe.src = 'https://www.youtube.com/embed/' + ytId + '?enablejsapi=1&rel=0&modestbranding=1&origin=' + origin;
+        // Init YT player for timestamp grabbing
+        if (!window.YT) {
+          var tag = document.createElement('script');
+          tag.src = 'https://www.youtube.com/iframe_api';
+          document.head.appendChild(tag);
+          var prevReady = window.onYouTubeIframeAPIReady;
+          window.onYouTubeIframeAPIReady = function() {
+            if (prevReady) prevReady();
+            noteYtPlayers[noteId] = new YT.Player(embedId+'-iframe');
+          };
+        } else if (window.YT && window.YT.Player) {
+          setTimeout(function() {
+            noteYtPlayers[noteId] = new YT.Player(embedId+'-iframe');
+          }, 500);
+        }
+      }
+      btn.innerHTML = '&#9646;&#9646; Hide video';
+    }
+  };
+
+  window.noteStamp = function(noteId) {
+    var secs = 0;
+    try {
+      var p = noteYtPlayers[noteId];
+      if (p && p.getCurrentTime) secs = p.getCurrentTime();
+    } catch(e) {}
+    var comment = document.getElementById('yt-embed-'+noteId+'-comment').value.trim();
+    if (!noteTsBuffers[noteId]) noteTsBuffers[noteId] = [];
+    noteTsBuffers[noteId].push({time:secs, label:formatTime(secs), comment:comment});
+    noteTsBuffers[noteId].sort(function(a,b){return a.time-b.time;});
+    document.getElementById('yt-embed-'+noteId+'-comment').value = '';
+    var note = notes.find(function(n){return n.id==noteId;});
+    document.getElementById('yt-embed-'+noteId+'-tslist').innerHTML = renderNoteTimestamps(note?note.timestamps:[],noteId);
+  };
+
+  window.noteSeekTo = function(noteId, secs) {
+    try {
+      var p = noteYtPlayers[noteId];
+      if (p && p.seekTo) { p.seekTo(secs, true); p.playVideo(); }
+    } catch(e) {}
+  };
+
+  window.noteDeleteTs = function(noteId, idx, isPending) {
+    var note = notes.find(function(n){return n.id==noteId;});
+    var saved = note ? (note.timestamps||[]) : [];
+    var pending = noteTsBuffers[noteId] || [];
+    var all = saved.concat(pending);
+    all.sort(function(a,b){return a.time-b.time;});
+    var ts = all[idx];
+    if (!ts) return;
+    // Remove from saved or pending
+    if (note) note.timestamps = saved.filter(function(t){return !(t.time===ts.time&&t.comment===ts.comment);});
+    noteTsBuffers[noteId] = pending.filter(function(t){return !(t.time===ts.time&&t.comment===ts.comment);});
+    document.getElementById('yt-embed-'+noteId+'-tslist').innerHTML = renderNoteTimestamps(note?note.timestamps:[],noteId);
+  };
+
+  window.noteSaveTs = async function(noteId) {
+    var note = notes.find(function(n){return n.id==noteId;});
+    if (!note) return;
+    var pending = noteTsBuffers[noteId] || [];
+    if (!pending.length) { alert('No new timestamps to save.'); return; }
+    var merged = (note.timestamps||[]).concat(pending);
+    merged.sort(function(a,b){return a.time-b.time;});
+    // Save to Supabase
+    var result = await sb.from('notes').update({timestamps:merged}).eq('id',noteId);
+    if (result.error) { alert('Save failed: '+result.error.message); return; }
+    note.timestamps = merged;
+    noteTsBuffers[noteId] = [];
+    document.getElementById('yt-embed-'+noteId+'-tslist').innerHTML = renderNoteTimestamps(merged, noteId);
   };
 
   window.wbwClick = function(el) {
