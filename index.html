@@ -316,36 +316,21 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <hr class="divider">
       <div class="section-label">Your notes</div>
       <div class="form-block"><label>Study group notes</label>
-        <div class="lang-tabs">
-          <button class="lang-tab active" onclick="switchNoteLang('en',this)">English</button>
-          <button class="lang-tab" onclick="switchNoteLang('ar',this)">Arabic ع</button>
-          <button class="lang-tab" onclick="switchNoteLang('both',this)">Both</button>
-        </div>
-        <div class="note-english-field" id="group-notes-en-wrap">
-          <div class="ref-wrap">
+        <div class="ref-wrap">
 <div class="rich-editor-wrap"><div class="rich-toolbar"><button onmousedown="event.preventDefault();fmtCmd('bold')" title="Bold"><b>B</b></button><button onmousedown="event.preventDefault();fmtCmd('italic')" title="Italic"><i>I</i></button><button onmousedown="event.preventDefault();fmtCmd('underline')" title="Underline"><u>U</u></button><div class="sep"></div><button onmousedown="event.preventDefault();fmtCmd('insertUnorderedList')" title="Bullet list">&#8226; List</button><button onmousedown="event.preventDefault();fmtCmd('insertOrderedList')" title="Numbered list">1. List</button><div class="sep"></div><button onmousedown="event.preventDefault();fmtCmd('removeFormat')" title="Clear formatting">Clear</button></div><div class="rich-content" id="group-notes" contenteditable="true" style="min-height:90px;" data-placeholder="Key points from the halaqah, teacher's explanation..."></div></div>
-            <div class="ref-dropdown" id="ref-dropdown"></div>
-          </div>
-        </div>
-        <div class="note-arabic-field" id="group-notes-ar-wrap" style="display:none">
-<div class="rich-editor-wrap"><div class="rich-content arabic" id="group-notes-ar" contenteditable="true" style="min-height:90px;direction:rtl;text-align:right;" data-placeholder="أضف ملاحظاتك باللغة العربية..."></div></div>
+          <div class="ref-dropdown" id="ref-dropdown"></div>
         </div>
         <div class="ref-hint">Tip: type @2:255 to reference an aayah inline</div>
       </div>
       <div class="form-block"><label>Personal reflection</label>
-        <div class="lang-tabs">
-          <button class="lang-tab active" onclick="switchReflectLang('en',this)">English</button>
-          <button class="lang-tab" onclick="switchReflectLang('ar',this)">Arabic ع</button>
-          <button class="lang-tab" onclick="switchReflectLang('both',this)">Both</button>
-        </div>
-        <div class="note-english-field" id="reflection-en-wrap">
 <div class="rich-editor-wrap"><div class="rich-toolbar"><button onmousedown="event.preventDefault();fmtCmd('bold')" title="Bold"><b>B</b></button><button onmousedown="event.preventDefault();fmtCmd('italic')" title="Italic"><i>I</i></button><button onmousedown="event.preventDefault();fmtCmd('underline')" title="Underline"><u>U</u></button><div class="sep"></div><button onmousedown="event.preventDefault();fmtCmd('insertUnorderedList')" title="Bullet list">&#8226; List</button><button onmousedown="event.preventDefault();fmtCmd('insertOrderedList')" title="Numbered list">1. List</button><div class="sep"></div><button onmousedown="event.preventDefault();fmtCmd('removeFormat')" title="Clear formatting">Clear</button></div><div class="rich-content" id="reflection" contenteditable="true" style="min-height:90px;" data-placeholder="What does this aayah mean to me personally?"></div></div>
-        </div>
-        <div class="note-arabic-field" id="reflection-ar-wrap" style="display:none">
-<div class="rich-editor-wrap"><div class="rich-content arabic" id="reflection-ar" contenteditable="true" style="min-height:90px;direction:rtl;text-align:right;" data-placeholder="ما الذي تعنيه هذه الآية بالنسبة لي؟..."></div></div>
-        </div>
       </div>
-      <div class="form-block"><label>Action point</label><input type="text" id="action" placeholder="e.g. Memorise by next week, apply this daily..."></div>
+      <div class="form-block"><label>Reference</label>
+        <input type="text" id="reference" placeholder="e.g. Ibn Kathir vol.1, Maariful Quran p.45, Tafsir Al-Sa'di...">
+      </div>
+      <div class="form-block"><label>Lessons</label>
+<div class="rich-editor-wrap"><div class="rich-toolbar"><button onmousedown="event.preventDefault();fmtCmd('bold')" title="Bold"><b>B</b></button><button onmousedown="event.preventDefault();fmtCmd('italic')" title="Italic"><i>I</i></button><button onmousedown="event.preventDefault();fmtCmd('underline')" title="Underline"><u>U</u></button><div class="sep"></div><button onmousedown="event.preventDefault();fmtCmd('insertUnorderedList')" title="Bullet list">&#8226; List</button><button onmousedown="event.preventDefault();fmtCmd('insertOrderedList')" title="Numbered list">1. List</button><div class="sep"></div><button onmousedown="event.preventDefault();fmtCmd('removeFormat')" title="Clear formatting">Clear</button></div><div class="rich-content" id="action" contenteditable="true" style="min-height:110px;" data-placeholder="Key lessons, action points, things to memorise or apply..."></div></div>
+      </div>
       <div class="form-block"><label>YouTube / video link (optional)</label><input type="text" id="youtube-link" placeholder="e.g. https://youtube.com/watch?v=..."></div>
       <hr class="divider">
       <div class="section-label">Attachments</div>
@@ -409,7 +394,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <div class="stats-grid" style="margin-top:.25rem">
         <div class="stat-card"><div class="stat-num" id="s-total">-</div><div class="stat-label">Notes</div></div>
         <div class="stat-card"><div class="stat-num" id="s-surahs">-</div><div class="stat-label">Surahs</div></div>
-        <div class="stat-card"><div class="stat-num" id="s-actions">-</div><div class="stat-label">Actions</div></div>
+        <div class="stat-card"><div class="stat-num" id="s-actions">-</div><div class="stat-label">Lessons</div></div>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
         <div class="section-label" style="margin:0">Surahs studied</div>
@@ -500,7 +485,18 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <!-- Read-only aayah content -->
     <div id="edit-ayah-section" style="margin-bottom:1rem;padding:12px;background:var(--surface-2);border-radius:var(--radius-lg);display:none">
       <div id="edit-arabic-text" style="font-family:Amiri,serif;font-size:1.4rem;direction:rtl;text-align:right;line-height:2;color:var(--ink);margin-bottom:8px"></div>
-      <div id="edit-translation-text" style="font-size:13px;color:var(--ink-mid);line-height:1.6;margin-bottom:10px"></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+        <select id="edit-trans-id" style="font-size:12px;padding:5px 8px;border-radius:var(--radius);border:1px solid var(--border);flex:1;min-width:0">
+          <option value="131">The Clear Quran – Khattab</option>
+          <option value="20">Saheeh International</option>
+          <option value="85">Pickthall</option>
+          <option value="19">Yusuf Ali</option>
+          <option value="57">Mufti Taqi Usmani</option>
+          <option value="203">Dr. Wahiduddin Khan</option>
+        </select>
+        <button onclick="reloadEditTranslation()" style="padding:5px 12px;background:var(--teal-light);color:var(--teal);border:1px solid #9fe1cb;border-radius:var(--radius);font-family:DM Sans,sans-serif;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0">&#8635; Load</button>
+      </div>
+      <div id="edit-translation-text" style="font-size:13px;color:var(--ink-mid);line-height:1.6;margin-bottom:10px;min-height:20px"></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
         <div id="edit-wbw-toggle-btn" style="display:none">
           <button onclick="toggleEditWbw()" style="background:none;border:1px solid var(--border);border-radius:var(--radius);padding:5px 12px;font-size:12px;cursor:pointer;color:var(--ink-mid);font-family:DM Sans,sans-serif">&#9783; Word by word</button>
@@ -526,36 +522,21 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       </div>
     </div>
     <div class="form-block"><label>Study group notes</label>
-      <div class="lang-tabs">
-        <button class="lang-tab active" onclick="switchEditNoteLang('en',this)">English</button>
-        <button class="lang-tab" onclick="switchEditNoteLang('ar',this)">Arabic ع</button>
-        <button class="lang-tab" onclick="switchEditNoteLang('both',this)">Both</button>
-      </div>
-      <div class="note-english-field" id="edit-group-notes-en-wrap">
-        <div class="ref-wrap">
+      <div class="ref-wrap">
 <div class="rich-editor-wrap"><div class="rich-toolbar"><button onmousedown="event.preventDefault();fmtCmd('bold')" title="Bold"><b>B</b></button><button onmousedown="event.preventDefault();fmtCmd('italic')" title="Italic"><i>I</i></button><button onmousedown="event.preventDefault();fmtCmd('underline')" title="Underline"><u>U</u></button><div class="sep"></div><button onmousedown="event.preventDefault();fmtCmd('insertUnorderedList')" title="Bullet list">&#8226; List</button><button onmousedown="event.preventDefault();fmtCmd('insertOrderedList')" title="Numbered list">1. List</button><div class="sep"></div><button onmousedown="event.preventDefault();fmtCmd('removeFormat')" title="Clear formatting">Clear</button></div><div class="rich-content" id="edit-group-notes" contenteditable="true" style="min-height:80px;" data-placeholder="Study group notes..."></div></div>
-          <div class="ref-dropdown" id="edit-ref-dropdown"></div>
-        </div>
-      </div>
-      <div class="note-arabic-field" id="edit-group-notes-ar-wrap" style="display:none">
-<div class="rich-editor-wrap"><div class="rich-content arabic" id="edit-group-notes-ar" contenteditable="true" style="min-height:80px;direction:rtl;text-align:right;" data-placeholder="أضف ملاحظاتك باللغة العربية..."></div></div>
+        <div class="ref-dropdown" id="edit-ref-dropdown"></div>
       </div>
       <div class="ref-hint">Tip: type @2:255 to reference an aayah inline</div>
     </div>
     <div class="form-block"><label>Personal reflection</label>
-      <div class="lang-tabs">
-        <button class="lang-tab active" onclick="switchEditReflectLang('en',this)">English</button>
-        <button class="lang-tab" onclick="switchEditReflectLang('ar',this)">Arabic ع</button>
-        <button class="lang-tab" onclick="switchEditReflectLang('both',this)">Both</button>
-      </div>
-      <div class="note-english-field" id="edit-reflection-en-wrap">
 <div class="rich-editor-wrap"><div class="rich-toolbar"><button onmousedown="event.preventDefault();fmtCmd('bold')" title="Bold"><b>B</b></button><button onmousedown="event.preventDefault();fmtCmd('italic')" title="Italic"><i>I</i></button><button onmousedown="event.preventDefault();fmtCmd('underline')" title="Underline"><u>U</u></button><div class="sep"></div><button onmousedown="event.preventDefault();fmtCmd('insertUnorderedList')" title="Bullet list">&#8226; List</button><button onmousedown="event.preventDefault();fmtCmd('insertOrderedList')" title="Numbered list">1. List</button><div class="sep"></div><button onmousedown="event.preventDefault();fmtCmd('removeFormat')" title="Clear formatting">Clear</button></div><div class="rich-content" id="edit-reflection" contenteditable="true" style="min-height:80px;" data-placeholder="Personal reflection..."></div></div>
-      </div>
-      <div class="note-arabic-field" id="edit-reflection-ar-wrap" style="display:none">
-<div class="rich-editor-wrap"><div class="rich-content arabic" id="edit-reflection-ar" contenteditable="true" style="min-height:80px;direction:rtl;text-align:right;" data-placeholder="ما الذي تعنيه هذه الآية بالنسبة لي؟..."></div></div>
-      </div>
     </div>
-    <div class="form-block"><label>Action point</label><input type="text" id="edit-action"></div>
+    <div class="form-block"><label>Reference</label>
+      <input type="text" id="edit-reference" placeholder="e.g. Ibn Kathir vol.1, Maariful Quran p.45...">
+    </div>
+    <div class="form-block"><label>Lessons</label>
+<div class="rich-editor-wrap"><div class="rich-toolbar"><button onmousedown="event.preventDefault();fmtCmd('bold')" title="Bold"><b>B</b></button><button onmousedown="event.preventDefault();fmtCmd('italic')" title="Italic"><i>I</i></button><button onmousedown="event.preventDefault();fmtCmd('underline')" title="Underline"><u>U</u></button><div class="sep"></div><button onmousedown="event.preventDefault();fmtCmd('insertUnorderedList')" title="Bullet list">&#8226; List</button><button onmousedown="event.preventDefault();fmtCmd('insertOrderedList')" title="Numbered list">1. List</button><div class="sep"></div><button onmousedown="event.preventDefault();fmtCmd('removeFormat')" title="Clear formatting">Clear</button></div><div class="rich-content" id="edit-action" contenteditable="true" style="min-height:110px;" data-placeholder="Key lessons, action points, things to memorise or apply..."></div></div>
+    </div>
     <div class="form-block"><label>YouTube / video link</label><input type="text" id="edit-youtube-link" placeholder="https://youtube.com/watch?v=..."></div>
     <div class="form-block" id="edit-attachments-section" style="display:none">
       <label>Attachments</label>
@@ -830,7 +811,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     var level=document.getElementById('level').value;
     var groupNotes=document.getElementById('group-notes').innerHTML.trim();
     var reflection=document.getElementById('reflection').innerHTML.trim();
-    var action=document.getElementById('action').value.trim();
+    var action=document.getElementById('action').innerHTML.trim();
     var saveMsg=document.getElementById('save-msg');
     var saveBtn=document.getElementById('save-btn');
     if (!sn&&!name){alert('Please enter a surah number.');return;}
@@ -855,7 +836,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       ayah:String(ayahLabel), level:level,
       arabic:fetchedArabic||null, translation:fetchedTrans||null,
       group_notes:groupNotes||null,
-      group_notes_ar:document.getElementById('group-notes-ar').innerHTML.trim()||null,
+      reference:document.getElementById('reference').value.trim()||null,
       reflection:reflection||null,
       reflection_ar:document.getElementById('reflection-ar').innerHTML.trim()||null,
       action:action||null,
@@ -870,10 +851,12 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       saveMsg.textContent='Could not save. '+result.error.message;
       saveBtn.disabled=false;return;
     }
-    notes.unshift({id:row.id,date:row.note_date,editedAt:'',timestamps:[],surahNum:row.surah_num,surahName:row.surah_name,ayah:row.ayah,level:level,arabic:fetchedArabic,translation:fetchedTrans,wordByWord:fetchedWords.length?JSON.stringify(fetchedWords):null,groupNotes:groupNotes,groupNotesAr:document.getElementById('group-notes-ar').innerHTML.trim()||'',reflection:reflection,reflectionAr:document.getElementById('reflection-ar').innerHTML.trim()||'',action:action,youtubeLink:row.youtube_link||'',attachments:attachments});
+    notes.unshift({id:row.id,date:row.note_date,editedAt:'',timestamps:[],transId:document.getElementById('trans-id').value||'131',surahNum:row.surah_num,surahName:row.surah_name,ayah:row.ayah,level:level,arabic:fetchedArabic,translation:fetchedTrans,wordByWord:fetchedWords.length?JSON.stringify(fetchedWords):null,groupNotes:groupNotes,reference:document.getElementById('reference').value.trim()||'',reflection:reflection,reflectionAr:document.getElementById('reflection-ar').innerHTML.trim()||'',action:action,youtubeLink:row.youtube_link||'',attachments:attachments});
     renderNotes();renderStats();populateFilter();if(notesView==='table')renderNotesTable();
     badge('ok','Synced');saveMsg.className='status-msg';saveMsg.textContent='';
-    ['group-notes','group-notes-ar','reflection','reflection-ar'].forEach(function(id){document.getElementById(id).innerHTML='';});
+    ['group-notes','reflection'].forEach(function(id){document.getElementById(id).innerHTML='';});
+    document.getElementById('reference').value='';
+    document.getElementById('action').innerHTML='';
     ['action','youtube-link'].forEach(function(id){document.getElementById(id).value='';}); 
     saveLastPosition();
     document.getElementById('ayah-preview').classList.remove('visible');
@@ -912,9 +895,10 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         return;
       }
       notes=result.data.map(function(r){
-        return {id:r.id,date:r.note_date,editedAt:r.edited_at||'',surahNum:r.surah_num,surahName:r.surah_name,ayah:r.ayah,level:r.level,arabic:r.arabic,translation:r.translation,wordByWord:r.word_by_word||null,groupNotes:r.group_notes,groupNotesAr:r.group_notes_ar||'',reflection:r.reflection,reflectionAr:r.reflection_ar||'',action:r.action,youtubeLink:r.youtube_link||'',attachments:r.attachments||[],timestamps:r.timestamps||[]};
+        return {id:r.id,date:r.note_date,editedAt:r.edited_at||'',surahNum:r.surah_num,surahName:r.surah_name,ayah:r.ayah,level:r.level,arabic:r.arabic,translation:r.translation,transId:r.trans_id||'131',wordByWord:r.word_by_word||null,groupNotes:r.group_notes,reference:r.reference||'',reflection:r.reflection,reflectionAr:r.reflection_ar||'',action:r.action,youtubeLink:r.youtube_link||'',attachments:r.attachments||[],timestamps:r.timestamps||[]};
       });
       badge('ok','Synced');renderNotes();renderStats();populateFilter();buildSearchChips();
+      if(notesView==='table')renderNotesTable();
       restoreLastPosition();
     });
   }
@@ -1112,7 +1096,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       h+='<div class="note-fields">';
       if(n.groupNotes)h+='<div class="nf-full"><div class="nf-label">Study group notes</div><div class="nf-val">'+highlight(linkifyRefs(n.groupNotes),searchVal)+'</div></div>';
       if(n.reflection)h+='<div><div class="nf-label">Reflection</div><div class="nf-val">'+highlight(linkifyRefs(n.reflection),searchVal)+'</div></div>';
-      if(n.action)h+='<div class="nf-full"><div class="nf-label">Action point</div><div class="nf-val"><span class="action-pill">&#10003; '+n.action+'</span></div></div>';
+      if(n.reference)h+='<div class="nf-full"><div class="nf-label">Reference</div><div class="nf-val" style="font-size:12px;color:var(--ink-mid)">&#128218; '+escHtml(n.reference)+'</div></div>';
+      if(n.action)h+='<div class="nf-full"><div class="nf-label">Lessons</div><div class="nf-val" style="line-height:1.7">'+n.action+'</div></div>';
       h+='</div>';
       if(n.youtubeLink) {
         var ytId = extractYtId(n.youtubeLink);
@@ -1269,6 +1254,9 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       ayahSection.style.display = 'block';
       arEl.textContent = note.arabic || '';
       trEl.textContent = note.translation || '';
+      // Set translation selector to saved preference
+      var etrans = document.getElementById('edit-trans-id');
+      if (etrans && note.transId) etrans.value = note.transId;
       wbwBtn.style.display = note.wordByWord ? 'block' : 'none';
       if (vidBtn) {
       vidBtn.style.display = note.youtubeLink ? 'block' : 'none';
@@ -1279,8 +1267,9 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       ayahSection.style.display = 'none';
     }
     document.getElementById('edit-group-notes').innerHTML = note.groupNotes || '';
+    document.getElementById('edit-reference').value = note.reference || '';
     document.getElementById('edit-reflection').innerHTML = note.reflection || '';
-    document.getElementById('edit-action').value = note.action || '';
+    document.getElementById('edit-action').innerHTML = note.action || '';
     document.getElementById('edit-youtube-link').value = note.youtubeLink || '';
     document.getElementById('edit-group-notes-ar').innerHTML = note.groupNotesAr || '';
     document.getElementById('edit-reflection-ar').innerHTML = note.reflectionAr || '';
@@ -1308,10 +1297,10 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   window.saveEdit = async function() {
     if (!editingId) return;
     var groupNotes = document.getElementById('edit-group-notes').innerHTML.trim();
-    var groupNotesAr = document.getElementById('edit-group-notes-ar').innerHTML.trim();
+    var reference = document.getElementById('edit-reference').value.trim();
     var reflection = document.getElementById('edit-reflection').innerHTML.trim();
     var reflectionAr = document.getElementById('edit-reflection-ar').innerHTML.trim();
-    var action     = document.getElementById('edit-action').value.trim();
+    var action     = document.getElementById('edit-action').innerHTML.trim();
     var youtubeLink= document.getElementById('edit-youtube-link').value.trim();
     var btn = document.getElementById('edit-save-btn');
     var msg = document.getElementById('edit-msg');
@@ -1342,7 +1331,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     var result = await sb.from('notes').update({
       edited_at:    now,
       group_notes:  groupNotes  || null,
-      group_notes_ar: groupNotesAr || null,
+      reference:     reference    || null,
       reflection:   reflection  || null,
       reflection_ar: reflectionAr || null,
       action:       action      || null,
@@ -1359,7 +1348,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     // Update in memory
     notes = notes.map(function(n) {
       if (n.id !== editingId) return n;
-      return Object.assign({}, n, {groupNotes:groupNotes, groupNotesAr:groupNotesAr, reflection:reflection, reflectionAr:reflectionAr, action:action, youtubeLink:youtubeLink, attachments:currentAttachments, editedAt:now});
+      return Object.assign({}, n, {groupNotes:groupNotes, reference:reference, reflection:reflection, reflectionAr:reflectionAr, action:action, youtubeLink:youtubeLink, attachments:currentAttachments, editedAt:now});
     });
     renderNotes(); renderStats();
     badge('ok','Synced');
@@ -1769,7 +1758,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       // Notes fields
       if (stripHtml(note.groupNotes)) out += labelValuePara('Study group notes', stripHtml(note.groupNotes));
       if (stripHtml(note.reflection)) out += labelValuePara('Personal reflection', stripHtml(note.reflection));
-      if (note.action)     out += labelValuePara('Action point', note.action, 'EAF6F0');
+      if (note.reference) out += labelValuePara('Reference', note.reference);
+      if (note.action)     out += labelValuePara('Lessons', stripHtml(note.action), 'EAF6F0');
       if (note.youtubeLink) {
         out += labelValuePara('Video link', note.youtubeLink);
         out += para('Link: ' + note.youtubeLink, {size:'16', color:'888880', shade:'F5F5F0'});
@@ -1913,9 +1903,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
   // Close modal on backdrop click
 
-  document.getElementById('edit-modal').addEventListener('click', function(e) {
-    if (e.target === this) closeEdit();
-  });
+  // Edit modal: do NOT close on backdrop click to prevent data loss
 
 
   // ── VIDEO STUDY TAB ──
@@ -2759,9 +2747,61 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   };
 
   window.noteSeekTo = function(noteId, secs) {
+    var embedId = 'yt-embed-' + noteId;
+    var wrap = document.getElementById(embedId);
+
+    // If video not visible, expand it first then seek
+    if (!wrap || wrap.style.display === 'none') {
+      var n = notes.find(function(n){return n.id==noteId;});
+      var ytId = n && n.youtubeLink ? extractYtId(n.youtubeLink) : null;
+      if (!ytId) return;
+      // Find the toggle button and click it to expand
+      var toggleBtn = wrap ? wrap.previousElementSibling : null;
+      if (toggleBtn && toggleBtn.onclick) {
+        toggleBtn.click();
+      } else {
+        // Manually expand
+        if (wrap) wrap.style.display = 'block';
+        var iframe = document.getElementById(embedId + '-iframe');
+        var origin = encodeURIComponent(window.location.origin);
+        if (iframe) {
+          iframe.src = 'https://www.youtube.com/embed/' + ytId + '?enablejsapi=1&rel=0&modestbranding=1&origin=' + origin + '&start=' + Math.floor(secs) + '&autoplay=1';
+        }
+        // Init player
+        var doInit = function() {
+          noteYtPlayers[noteId] = new YT.Player(embedId + '-iframe', {
+            events: { onReady: function(e) { noteYtPlayers[noteId] = e.target; } }
+          });
+        };
+        if (!window.YT || !window.YT.Player) {
+          var tag = document.createElement('script');
+          tag.src = 'https://www.youtube.com/iframe_api';
+          document.head.appendChild(tag);
+          var prev = window.onYouTubeIframeAPIReady;
+          window.onYouTubeIframeAPIReady = function() { if(prev) prev(); doInit(); };
+        } else {
+          setTimeout(doInit, 800);
+        }
+      }
+      return;
+    }
+
+    // Video already visible — seek directly
     try {
       var p = noteYtPlayers[noteId];
-      if (p && p.seekTo) { p.seekTo(secs, true); p.playVideo(); }
+      if (p && typeof p.seekTo === 'function') {
+        p.seekTo(secs, true);
+        p.playVideo();
+      } else {
+        // Player not ready yet — reload iframe with start param
+        var iframe2 = document.getElementById(embedId + '-iframe');
+        var n2 = notes.find(function(n){return n.id==noteId;});
+        var ytId2 = n2 && n2.youtubeLink ? extractYtId(n2.youtubeLink) : null;
+        if (iframe2 && ytId2) {
+          var origin2 = encodeURIComponent(window.location.origin);
+          iframe2.src = 'https://www.youtube.com/embed/' + ytId2 + '?enablejsapi=1&rel=0&modestbranding=1&origin=' + origin2 + '&start=' + Math.floor(secs) + '&autoplay=1';
+        }
+      }
     } catch(e) {}
   };
 
@@ -3046,7 +3086,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         var blob = [n.surahNum,n.surahName,n.ayah,n.arabic,n.translation,n.groupNotes,n.reflection,n.action,n.youtubeLink].join(' ').toLowerCase();
         if (blob.indexOf(searchVal) === -1) return false;
       }
-      if (searchVal === '__action__') return !!n.action;
+      if (searchVal === '__action__') return !!n.action; // Lessons
       if (searchVal === '__video__') return !!n.youtubeLink;
       return true;
     });
@@ -3100,11 +3140,16 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   window.closeViewModal = function() {
     document.getElementById('view-modal').style.display = 'none';
     document.body.style.overflow = '';
+    var vi = document.getElementById('vm-video-iframe'); if(vi) vi.src='';
+    viewingNote = null;
   };
+
+  var viewingNote = null;
 
   window.viewNoteCard = function(id) {
     var note = notes.find(function(n){return n.id===id;});
     if (!note) return;
+    viewingNote = note;
     var title = (note.surahNum?note.surahNum+'. ':'')+note.surahName+(note.ayah?' — Aayah '+note.ayah:'');
     document.getElementById('view-modal-title').textContent = title;
     document.getElementById('view-modal-edit-btn').onclick = function(){ closeViewModal(); editNote(id); };
@@ -3115,16 +3160,36 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       + (note.editedAt ? '  ·  &#9998; edited ' + escHtml(note.editedAt) : '')
       + '  ·  <span style="background:var(--teal-light);color:var(--teal);padding:2px 8px;border-radius:99px;font-size:11px">'+escHtml(note.level)+'</span>'
       + '</div>';
-    // Arabic
-    if (note.arabic) b += '<div style="font-family:Amiri,serif;font-size:1.4rem;direction:rtl;text-align:right;line-height:2;background:var(--teal-pale);border-radius:var(--radius);padding:12px;margin-bottom:10px">'+escHtml(note.arabic)+'</div>';
-    // Translation
-    if (note.translation) b += '<div style="font-style:italic;color:var(--ink-mid);margin-bottom:12px;font-size:13px">'+escHtml(note.translation)+'</div>';
+    // Arabic always shown
+    if (note.arabic) b += '<div style="font-family:Amiri,serif;font-size:1.4rem;direction:rtl;text-align:right;line-height:2;background:var(--teal-pale);border-radius:var(--radius-lg);padding:12px;margin-bottom:10px">'+escHtml(note.arabic)+'</div>';
+    // Collapsible toggle row
+    var hasTranslation = !!note.translation;
+    var hasWbw = !!note.wordByWord;
+    if (hasTranslation || hasWbw) {
+      b += '<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">';
+      if (hasTranslation) {
+        b += '<button data-sec="vm-translation" onclick="toggleViewSection(this.dataset.sec)" style="font-size:12px;padding:4px 12px;background:var(--surface-2);border:1px solid var(--border);border-radius:99px;cursor:pointer;color:var(--ink-mid);font-family:DM Sans,sans-serif" id="vm-trans-btn">&#128065; Show translation</button>';
+      }
+      if (hasWbw) {
+        b += '<button data-sec="vm-wbw" onclick="toggleViewSection(this.dataset.sec)" style="font-size:12px;padding:4px 12px;background:var(--surface-2);border:1px solid var(--border);border-radius:99px;cursor:pointer;color:var(--ink-mid);font-family:DM Sans,sans-serif" id="vm-wbw-btn">&#9783; Show word by word</button>';
+      }
+      b += '</div>';
+    }
+    // Translation (hidden by default)
+    if (hasTranslation) {
+      b += '<div id="vm-translation" style="display:none;font-style:italic;color:var(--ink-mid);margin-bottom:12px;font-size:13px;padding:10px 12px;background:var(--surface-2);border-radius:var(--radius);line-height:1.7">'+escHtml(note.translation)+'</div>';
+    }
+    // Word by word (hidden by default, rendered via renderWbwTable)
+    if (hasWbw) {
+      b += '<div id="vm-wbw" style="display:none;margin-bottom:12px"></div>';
+    }
     // Notes
     if (note.groupNotes) b += '<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-muted);margin-bottom:4px">Study group notes</div><div style="line-height:1.7">'+note.groupNotes+'</div></div>';
     if (note.groupNotesAr) b += '<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-muted);margin-bottom:4px">Study group notes (Arabic)</div><div style="font-family:Amiri,serif;font-size:1.1rem;direction:rtl;text-align:right;line-height:1.8">'+note.groupNotesAr+'</div></div>';
     if (note.reflection) b += '<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-muted);margin-bottom:4px">Personal reflection</div><div style="line-height:1.7">'+note.reflection+'</div></div>';
     if (note.reflectionAr) b += '<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-muted);margin-bottom:4px">Reflection (Arabic)</div><div style="font-family:Amiri,serif;font-size:1.1rem;direction:rtl;text-align:right;line-height:1.8">'+note.reflectionAr+'</div></div>';
-    if (note.action) b += '<div style="margin-bottom:10px"><span style="background:var(--teal-light);color:var(--teal);padding:4px 12px;border-radius:99px;font-size:13px">&#10003; '+escHtml(note.action)+'</span></div>';
+    if (note.reference) b += '<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-muted);margin-bottom:4px">Reference</div><div style="font-size:13px;color:var(--ink-mid)">&#128218; '+escHtml(note.reference)+'</div></div>';
+    if (note.action) b += '<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-muted);margin-bottom:4px">Lessons</div><div style="line-height:1.7">'+note.action+'</div></div>';
     // Timestamps
     if (note.timestamps&&note.timestamps.length) {
       b += '<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-muted);margin-bottom:6px">Timestamps</div>';
@@ -3147,12 +3212,107 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     document.getElementById('view-modal-body').innerHTML = b;
     document.getElementById('view-modal').style.display = 'block';
     document.body.style.overflow = 'hidden';
+    // Pre-parse wbw data so it's ready when user expands
+    if (note.wordByWord) {
+      try { viewingNote._wbdParsed = JSON.parse(note.wordByWord); } catch(e) {}
+    }
+  };
+
+  window.toggleViewSection = function(sectionId) {
+    var el = document.getElementById(sectionId);
+    if (!el) return;
+    var isHidden = el.style.display === 'none';
+    el.style.display = isHidden ? 'block' : 'none';
+
+    if (sectionId === 'vm-translation') {
+      var btn = document.getElementById('vm-trans-btn');
+      if (btn) btn.innerHTML = isHidden ? '&#128065; Hide translation' : '&#128065; Show translation';
+      if (btn) { btn.style.background = isHidden ? 'var(--teal-light)' : 'var(--surface-2)'; btn.style.borderColor = isHidden ? '#9fe1cb' : 'var(--border)'; btn.style.color = isHidden ? 'var(--teal)' : 'var(--ink-mid)'; }
+    }
+
+    if (sectionId === 'vm-wbw' && isHidden && viewingNote && viewingNote._wbdParsed) {
+      var btn2 = document.getElementById('vm-wbw-btn');
+      if (btn2) { btn2.innerHTML = '&#9783; Hide word by word'; btn2.style.background='var(--teal-light)'; btn2.style.borderColor='#9fe1cb'; btn2.style.color='var(--teal)'; }
+      var sn = parseInt(viewingNote.surahNum) || 0;
+      var af = parseInt(viewingNote.ayah) || 1;
+      renderWbwTable(el, viewingNote._wbdParsed, sn, af);
+    } else if (sectionId === 'vm-wbw' && !isHidden) {
+      var btn3 = document.getElementById('vm-wbw-btn');
+      if (btn3) { btn3.innerHTML = '&#9783; Show word by word'; btn3.style.background='var(--surface-2)'; btn3.style.borderColor='var(--border)'; btn3.style.color='var(--ink-mid)'; }
+    }
+
+    if (sectionId === 'vm-video') {
+      var vBtn = document.getElementById('vm-video-btn');
+      var iframe = document.getElementById('vm-video-iframe');
+      if (isHidden) {
+        // Load iframe
+        if (iframe && viewingNote && viewingNote.youtubeLink) {
+          var ytId = extractYtId(viewingNote.youtubeLink);
+          var origin = encodeURIComponent(window.location.origin);
+          iframe.src = 'https://www.youtube.com/embed/' + ytId + '?enablejsapi=1&rel=0&modestbranding=1&origin=' + origin;
+        }
+        if (vBtn) { vBtn.innerHTML = '&#9646;&#9646; Hide video'; vBtn.style.background='var(--teal-light)'; vBtn.style.borderColor='#9fe1cb'; vBtn.style.color='var(--teal)'; }
+      } else {
+        // Stop video
+        if (iframe) iframe.src = '';
+        if (vBtn) { vBtn.innerHTML = '&#9654; Play video'; vBtn.style.background='var(--surface-2)'; vBtn.style.borderColor='var(--border)'; vBtn.style.color='var(--ink-mid)'; }
+      }
+    }
+  };
+
+  window.vmSeekTo = function(secs) {
+    var iframe = document.getElementById('vm-video-iframe');
+    if (!iframe) return;
+    var ytId = viewingNote && viewingNote.youtubeLink ? extractYtId(viewingNote.youtubeLink) : null;
+    if (!ytId) return;
+    var origin = encodeURIComponent(window.location.origin);
+    iframe.src = 'https://www.youtube.com/embed/' + ytId + '?enablejsapi=1&rel=0&modestbranding=1&origin=' + origin + '&start=' + Math.floor(secs) + '&autoplay=1';
+    // Make sure video section is visible
+    var vmVideo = document.getElementById('vm-video');
+    if (vmVideo && vmVideo.style.display === 'none') toggleViewSection('vm-video');
   };
 
   // Close view modal on backdrop click
-  document.getElementById('view-modal').addEventListener('click', function(e){
+  document.getElementById('view-modal').addEventListener('click', function(e) {
     if (e.target === this) closeViewModal();
   });
+
+
+  // ── RELOAD TRANSLATION IN EDIT MODAL ──
+  window.reloadEditTranslation = async function() {
+    if (!editingNote || !editingNote.surahNum || !editingNote.ayah) return;
+    var tid = document.getElementById('edit-trans-id').value;
+    var trEl = document.getElementById('edit-translation-text');
+    trEl.textContent = 'Loading...';
+    try {
+      var sn = parseInt(editingNote.surahNum);
+      var ayahParts = String(editingNote.ayah).split('-');
+      var from = parseInt(ayahParts[0]) || 1;
+      var to = ayahParts[1] ? parseInt(ayahParts[1]) : from;
+      var translations = [];
+      for (var a = from; a <= to; a++) {
+        var url = 'https://api.quran.com/api/v4/verses/by_key/' + sn + ':' + a
+          + '?translations=' + tid + '&fields=text_uthmani';
+        var resp = await fetch(url);
+        var data = await resp.json();
+        var verse = data.verse;
+        if (verse && verse.translations && verse.translations[0]) {
+          var t = verse.translations[0].text.replace(/<[^>]+>/g, '');
+          translations.push('(' + sn + ':' + a + ') ' + t);
+        }
+      }
+      var combined = translations.join(' ');
+      trEl.textContent = combined || 'No translation found.';
+      // Update in memory and save to Supabase
+      editingNote.translation = combined;
+      editingNote.transId = tid;
+      var n = notes.find(function(n){return n.id===editingNote.id;});
+      if (n) { n.translation = combined; n.transId = tid; }
+      await sb.from('notes').update({translation: combined, trans_id: tid}).eq('id', editingNote.id);
+    } catch(e) {
+      trEl.textContent = 'Could not load translation.';
+    }
+  };
 
 })();
 </script>
