@@ -1271,8 +1271,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     document.getElementById('edit-reflection').innerHTML = note.reflection || '';
     document.getElementById('edit-action').innerHTML = note.action || '';
     document.getElementById('edit-youtube-link').value = note.youtubeLink || '';
-    document.getElementById('edit-group-notes-ar').innerHTML = note.groupNotesAr || '';
-    document.getElementById('edit-reflection-ar').innerHTML = note.reflectionAr || '';
     document.getElementById('edit-msg').textContent = '';
     editPendingFiles = [];
     editRemovedPaths = [];
@@ -1299,7 +1297,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     var groupNotes = document.getElementById('edit-group-notes').innerHTML.trim();
     var reference = document.getElementById('edit-reference').value.trim();
     var reflection = document.getElementById('edit-reflection').innerHTML.trim();
-    var reflectionAr = document.getElementById('edit-reflection-ar').innerHTML.trim();
     var action     = document.getElementById('edit-action').innerHTML.trim();
     var youtubeLink= document.getElementById('edit-youtube-link').value.trim();
     var btn = document.getElementById('edit-save-btn');
@@ -1333,7 +1330,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       group_notes:  groupNotes  || null,
       reference:     reference    || null,
       reflection:   reflection  || null,
-      reflection_ar: reflectionAr || null,
       action:       action      || null,
       youtube_link: youtubeLink || null,
       attachments:  currentAttachments
