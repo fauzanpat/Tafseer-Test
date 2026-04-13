@@ -2572,7 +2572,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     list.innerHTML = all.map(function(ts, i) {
       var isPending = editModalTsBuffer.some(function(p){return p.time===ts.time&&p.comment===ts.comment;});
       return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">'
-        +'<span style="font-size:11px;font-weight:600;color:var(--teal);padding:2px 7px;background:var(--teal-light);border-radius:99px;border:1px solid #9fe1cb;flex-shrink:0">'+ts.label+'</span>'
+        +'<button data-secs="'+ts.time+'" onclick="editModalSeekTo(+this.dataset.secs)" style="font-size:11px;font-weight:600;color:var(--teal);padding:2px 7px;background:var(--teal-light);border-radius:99px;border:1px solid #9fe1cb;cursor:pointer;flex-shrink:0" title="Seek to this moment">'+ts.label+'</button>'
         +(ts.comment?'<span style="font-size:12px;color:var(--ink-mid);flex:1">'+escHtml(ts.comment)+'</span>':'<span style="font-size:12px;color:var(--ink-faint);flex:1;font-style:italic">No comment</span>')
         +(isPending?'<span style="font-size:10px;color:var(--teal);background:var(--teal-light);padding:1px 5px;border-radius:99px">unsaved</span>':'')
         +'<button data-idx="'+i+'" data-pending="'+(isPending?1:0)+'" onclick="editModalDeleteTs(this)" style="background:none;border:none;cursor:pointer;color:var(--ink-faint);font-size:14px;padding:0 2px;flex-shrink:0">&#10005;</button>'
@@ -2629,6 +2629,31 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     if (n) n.timestamps = merged;
     editModalTsBuffer = [];
     renderEditTsList();
+  };
+
+  window.editModalSeekTo = function(secs) {
+    // Ensure video is open
+    var cont = document.getElementById('edit-video-container');
+    if (!cont || cont.style.display === 'none') {
+      toggleEditVideo();
+      // Wait for player to init then seek
+      setTimeout(function() { editModalSeekTo(secs); }, 1200);
+      return;
+    }
+    try {
+      if (editModalYtPlayer && typeof editModalYtPlayer.seekTo === 'function') {
+        editModalYtPlayer.seekTo(secs, true);
+        editModalYtPlayer.playVideo();
+      } else {
+        // Player not ready — reload iframe with start param
+        var iframe = document.getElementById('edit-video-iframe');
+        var ytId = editingNote && editingNote.youtubeLink ? extractYtId(editingNote.youtubeLink) : null;
+        if (iframe && ytId) {
+          var origin = encodeURIComponent(window.location.origin);
+          iframe.src = 'https://www.youtube.com/embed/' + ytId + '?enablejsapi=1&rel=0&modestbranding=1&origin=' + origin + '&start=' + Math.floor(secs) + '&autoplay=1';
+        }
+      }
+    } catch(e) {}
   };
 
   window.toggleEditWbw = function() {
